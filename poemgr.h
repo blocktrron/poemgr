@@ -1,5 +1,7 @@
 #pragma once
 
+#include <time.h>
+
 #define POEMGR_MAX_PORTS	4
 
 #define POEMGR_ACTION_STRING_SHOW	"show"
@@ -20,6 +22,8 @@ struct poemgr_profile {
 	void *priv;
 
 	int (*init)(struct poemgr_ctx *);
+	int (*update_port_status)(struct poemgr_ctx *);
+	int (*update_pse_status)(struct poemgr_ctx *);
 };
 
 struct poemgr_port_settings {
@@ -28,8 +32,17 @@ struct poemgr_port_settings {
 	int pse_port;
 };
 
+struct poemgr_port_status {
+	int enabled;
+	int power_limit;
+	int power;
+
+	time_t last_update;
+};
+
 struct poemgr_port {
 	struct poemgr_port_settings settings;
+	struct poemgr_port_status status;
 };
 
 struct poemgr_settings {
