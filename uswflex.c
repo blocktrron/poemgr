@@ -5,6 +5,7 @@ static struct pd69104_priv psechip;
 
 struct poemgr_profile poemgr_profile_uswflex = {
 	.name = "usw-flex",
+	.init = &poemgr_uswflex_init_chip,
 	.priv = &psechip,
 };
 
