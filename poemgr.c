@@ -141,6 +141,8 @@ int main(int argc, char *argv[])
 		exit(1);
 
 	ctx.profile = profile;
+	if (profile->init(&ctx))
+		exit(1);
 
 	/* check which action we are supposed to perform */
 	if (argc > 1)
