@@ -90,6 +90,8 @@ int main(int argc, char *argv[])
 	if (profile == NULL)
 		exit(1);
 
+	ctx.profile = profile;
+
 	/* check which action we are supposed to perform */
 	if (argc > 1)
 		action = argv[1];

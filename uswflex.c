@@ -10,9 +10,6 @@ struct poemgr_profile poemgr_profile_uswflex = {
 };
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
-	/* Configure Profile */
-	ctx->profile = &poemgr_profile_uswflex;
-
 	/* ToDo: Toggle shift register */
 
 	/* Init PD69104 */
