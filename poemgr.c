@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <uci.h>
 
 #include "poemgr.h"
 
