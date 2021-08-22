@@ -11,34 +11,40 @@
 #include "pd69104.h"
 #include "pd69104_regs.h"
 
+#define I2C_SMBUS_READ	1
+#define I2C_SMBUS_WRITE	0
 
-static int pd69104_wr(struct pd69104_priv *priv, uint8_t reg, uint8_t data)
+
+static int32_t i2c_smbus_access(int file, char read_write, uint8_t command, int size, char *data)
 {
-	char reg_data[2] = {reg, data};
+	struct i2c_smbus_ioctl_data args;
 
-	if (write(priv->i2c_fd, &reg_data, 2) != 2) {
-		perror("Write error");
-		return -1;
-	}
+	args.read_write = read_write;
+	args.command = command;
+	args.size = size;
+	args.data = data;
+	return ioctl(file,I2C_SMBUS,&args);
+}
 
-	return 0;
+
+static int pd69104_wr(struct pd69104_priv *priv, uint8_t reg, uint8_t val)
+{
+	union i2c_smbus_data data;
+
+	data.byte = val;
+
+	return i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_WRITE, reg,
+							2, (char *) &data);
 }
 
 static int pd69104_rr(struct pd69104_priv *priv, uint8_t reg)
 {
-	uint8_t buf;
+	union i2c_smbus_data data;
 
-	if (write(priv->i2c_fd, &reg, 1) != 1) {
-		perror("Write reg error");
+	if (i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_READ, reg, 2, (char *) &data))
 		return -1;
-	}
-
-	if (read(priv->i2c_fd, &buf, 1) != 1) {
-		perror("Read error");
-		return -1;
-	}
-
-	return (int) buf;
+	
+	return 0x0FF & data.byte;
 }
 
 int pd69104_init(struct pd69104_priv *priv, int i2c_bus, int i2c_addr)
@@ -54,6 +60,11 @@ int pd69104_init(struct pd69104_priv *priv, int i2c_bus, int i2c_addr)
 
 	if (fd == -1) {
 		perror(i2cpath);
+		return 1;
+	}
+
+	if (ioctl(fd, I2C_SLAVE, priv->i2c_addr) < 0) {
+		perror("i2c_set_address");
 		return 1;
 	}
 
