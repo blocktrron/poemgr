@@ -3,12 +3,6 @@
 
 static struct pd69104_priv psechip;
 
-struct poemgr_profile poemgr_profile_uswflex = {
-	.name = "usw-flex",
-	.init = &poemgr_uswflex_init_chip,
-	.priv = &psechip,
-};
-
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 	/* ToDo: Toggle shift register */
 
@@ -18,3 +12,10 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 
 	return 0;
 }
+
+
+struct poemgr_profile poemgr_profile_uswflex = {
+	.name = "usw-flex",
+	.init = &poemgr_uswflex_init_chip,
+	.priv = &psechip,
+};
