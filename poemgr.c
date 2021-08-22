@@ -32,7 +32,7 @@ int load_settings(struct poemgr_ctx *ctx)
 	if (!uci_ctx)
 		return -1;
 
-	if (uci_load(uci_ctx, "autoupdater", &package) != UCI_OK) {
+	if (uci_load(uci_ctx, "poemgr", &package) != UCI_OK) {
 		ret = -1;
 		goto out;
 	}
