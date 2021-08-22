@@ -1,13 +1,32 @@
 #pragma once
 
-#include "poemgr.h"
+/**
+ * See Microsemi_PoE_PD69104B1_Generic_UG_Reg_Map.pdf
+ *
+ * http://ww1.microchip.com/downloads/en/DeviceDoc/Microsemi_PoE_PD69104B1_Generic_UG_Reg_Map.pdf
+ */
 
-struct pd69104 {
-	int i2c_fd;
+#define GENMASK(h, l) \
+	(((~0UL) << (l)) & (~0UL >> (32 - 1 - (h))))
 
-	int i2c_addr;
-};
 
-int pd69104_init(struct pd69104 *ctx, int i2c_bus, int i2c_addr);
+#define PD69104_REG_FIRMWARE			0x41
 
-int pd69104_end(struct pd69104 *ctx);
+#define PD69104_REG_DEVID				0x43
+
+/* Extended Auto Mode only */
+#define PD69104_REG_VTEMP				0x70
+
+#define PD69104_REG_PORT_SR_BASE		0x75
+#define PD69104_REG_PORT_SR(x)			(PD69104_REG_PORT_SR_BASE + (x < 3 ? 0 : 1))
+
+#define PD69104_REG_PRIO_CR				0x80
+
+#define PD69104_REG_PWR_CR_BASE			0x81
+#define PD69104_REG_PWR_CR(x)			(PD69104_REG_PWR_CR_BASE + x)
+
+#define PD69104_REG_PWR_BNK_BASE		0x89
+#define PD69104_REG_PWR_BNK()			(PD69104_REG_PWR_BNK_BASE + x)
+
+#define PD69104_REG_PWRGD						0x91
+#define PD69104_REG_PWRGD_PIN_STATUS_MASK		GENMASK(6, 3)
