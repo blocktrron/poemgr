@@ -9,6 +9,7 @@
 #include <sys/ioctl.h>
 
 #include "pd69104.h"
+#include "pd69104_regs.h"
 
 
 static int pd69104_wr(struct pd69104_priv *priv, uint8_t reg, uint8_t data)
@@ -64,4 +65,9 @@ int pd69104_init(struct pd69104_priv *priv, int i2c_bus, int i2c_addr)
 int pd69104_end(struct pd69104_priv *priv)
 {
 	return !!close(priv->i2c_fd);
+}
+
+int pd69104_port_power_consumption_get(struct pd69104_priv *priv, int port)
+{
+	return pd69104_rr(priv, PD69104_REG_PORT_CONS(port));
 }
