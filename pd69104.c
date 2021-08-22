@@ -60,3 +60,8 @@ int pd69104_init(struct pd69104_priv *priv, int i2c_bus, int i2c_addr)
 
 	return 0;
 }
+
+int pd69104_end(struct pd69104_priv *priv)
+{
+	return !!close(priv->i2c_fd);
+}
