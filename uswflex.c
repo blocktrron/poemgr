@@ -1,6 +1,8 @@
 #include "poemgr.h"
 #include "pd69104.h"
 
+#define USWLFEX_NUM_PORTS	4
+
 static struct pd69104_priv psechip;
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
@@ -16,6 +18,7 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 
 struct poemgr_profile poemgr_profile_uswflex = {
 	.name = "usw-flex",
+	.num_ports = USWLFEX_NUM_PORTS,
 	.init = &poemgr_uswflex_init_chip,
 	.priv = &psechip,
 };

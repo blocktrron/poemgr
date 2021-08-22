@@ -15,6 +15,7 @@ struct poemgr_ctx;
 
 struct poemgr_profile {
 	char *name;
+	int num_ports;
 
 	void *priv;
 
