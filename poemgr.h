@@ -1,6 +1,6 @@
 #pragma once
 
-#define POEMGR_MAX_PORTS	10
+#define POEMGR_MAX_PORTS	4
 
 #define POEMGR_ACTION_STRING_SHOW	"show"
 #define POEMGR_ACTION_STRING_APPLY	"apply"
@@ -24,9 +24,8 @@ struct poemgr_profile {
 
 struct poemgr_port_settings {
 	char *name;
+	int disabled;
 	int pse_port;
-	int priority;
-	int max_output;
 };
 
 struct poemgr_port {
