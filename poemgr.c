@@ -18,6 +18,54 @@ static int uci_lookup_option_int(struct uci_context* uci, struct uci_section* s,
 	return str == NULL ? -1 : atoi(str);
 }
 
+static int load_port_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
+{
+	struct uci_package *package;
+	struct uci_element *e;
+	struct uci_section *s;
+	int ret = 0;
+
+	if (uci_load(uci_ctx, "poemgr", &package) != UCI_OK) {
+		ret = -1;
+		goto out;
+	}
+
+	uci_foreach_element(&package->sections, e) {
+		struct uci_section *s = uci_to_section(e);
+		const char *disabled;
+		const char *port;
+		const char *name;
+		int port_idx;
+
+		if (strcmp(s->type, "port"))
+			continue;
+
+		port = uci_lookup_option_string(uci_ctx, s, "port");
+		name = uci_lookup_option_string(uci_ctx, s, "name");
+		disabled = uci_lookup_option_string(uci_ctx, s, "disabled");
+
+		if (!port) {
+			ret = 1;
+			goto out;
+		}
+
+		port_idx = atoi(port);
+		if (port_idx == -1) {
+			/* No port specified */
+			ret = 1;
+			goto out;
+		} else if (port_idx >= ctx->profile->num_ports) {
+			/* Port does not exist. Ignore. */
+			continue;
+		}
+
+		ctx->ports[port_idx].settings.name =  name ? strdup(name) : strdup(port);
+		ctx->ports[port_idx].settings.disabled = disabled ? !!atoi(disabled) : 0;
+	}
+out:
+	return ret;
+}
+
 int load_settings(struct poemgr_ctx *ctx)
 {
 	struct uci_context *uci_ctx = uci_alloc_context();
@@ -57,6 +105,8 @@ int load_settings(struct poemgr_ctx *ctx)
 	}
 
 	ctx->settings.profile = strdup(s);
+
+	ret = load_port_settings(ctx, uci_ctx);
 out:
 	if (uci_ctx);
 		uci_free_context(uci_ctx);
