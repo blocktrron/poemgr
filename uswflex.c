@@ -6,6 +6,8 @@
 
 #define USWLFEX_NUM_PORTS	4
 
+#define USWLFEX_OWN_POWER_BUDGET	5	/* Own power budget */
+
 static struct pd69104_priv psechip;
 
 static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
@@ -36,6 +38,20 @@ static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
 	}
 
 	return -1;
+}
+
+static int poemgr_uswflex_get_power_budget(struct poemgr_ctx *ctx, int poe_type)
+{
+	/* Watts */
+	switch (poe_type) {
+		case POEMGR_POE_TYPE_BT:
+			return 51 - USWLFEX_OWN_POWER_BUDGET;
+		case POEMGR_POE_TYPE_AT:
+			return 25 - USWLFEX_OWN_POWER_BUDGET;
+		case POEMGR_POE_TYPE_AF:
+		default:
+			return 13 - USWLFEX_OWN_POWER_BUDGET;
+	}
 }
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
@@ -71,10 +87,18 @@ static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx)
 	}
 }
 
+static int poemgr_uswflex_update_input_status(struct poemgr_ctx *ctx)
+{
+	ctx->input_status.type = poemgr_uswflex_read_power_input(ctx);
+
+	return 0;
+}
+
 struct poemgr_profile poemgr_profile_uswflex = {
 	.name = "usw-flex",
 	.num_ports = USWLFEX_NUM_PORTS,
 	.init = &poemgr_uswflex_init_chip,
 	.update_port_status = &poemgr_uswflex_update_port_status,
+	.update_input_status = &poemgr_uswflex_update_input_status,
 	.priv = &psechip,
 };
