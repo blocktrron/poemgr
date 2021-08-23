@@ -119,7 +119,7 @@ out:
 
 void poemgr_show(struct poemgr_ctx *ctx)
 {
-	struct json_object *root_obj, *ports_obj, *port_obj, *pse_obj, *input_obj;
+	struct json_object *root_obj, *ports_obj, *port_obj, *pse_obj, *input_obj, *output_obj;
 	char port_idx[3];
 	int ret = 0;
 
@@ -141,6 +141,9 @@ void poemgr_show(struct poemgr_ctx *ctx)
 	json_object_object_add(input_obj, "type", json_object_new_string(poemgr_poe_type_to_string(ctx->input_status.type)));
 	json_object_object_add(root_obj, "input", input_obj);
 
+	/* Get PoE output information */
+	output_obj = json_object_new_object();
+
 	/* Get port information */
 	ports_obj = json_object_new_object();
 	for (int i = 0; i < ctx->profile->num_ports; i++) {
@@ -154,7 +157,9 @@ void poemgr_show(struct poemgr_ctx *ctx)
 
 		json_object_object_add(ports_obj, port_idx, port_obj);
 	}
-	json_object_object_add(root_obj, "ports", ports_obj);
+	json_object_object_add(output_obj, "ports", ports_obj);
+
+	json_object_object_add(root_obj, "output", output_obj);
 
 	pse_obj = json_object_new_object();
 	/* ToDo: Call PSE output method */
