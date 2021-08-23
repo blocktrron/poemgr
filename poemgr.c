@@ -141,6 +141,9 @@ void poemgr_show(struct poemgr_ctx *ctx)
 	/* Create JSON object */
 	root_obj = json_object_new_object();
 
+	/* Add Profile name */
+	json_object_object_add(root_obj, "profile", json_object_new_string(ctx->profile->name));
+
 	/* Get PoE input information */
 	input_obj = json_object_new_object();
 	json_object_object_add(input_obj, "type", json_object_new_string(poemgr_poe_type_to_string(ctx->input_status.type)));
