@@ -47,6 +47,7 @@ struct poemgr_port_settings {
 
 struct poemgr_port_status {
 	int enabled;
+	int active;
 	int power_limit;
 	int power;
 
