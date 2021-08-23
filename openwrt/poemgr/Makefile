@@ -16,7 +16,7 @@ endef
 define Package/poemgr
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=+libuci
+  DEPENDS:=+libuci +libjson-c
   TITLE:=Control PoE ports on the UniFi Flex switch
 endef
 
