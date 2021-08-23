@@ -133,6 +133,11 @@ void poemgr_show(struct poemgr_ctx *ctx)
 	if (ret)
 		goto out;
 
+	/* Update output status */
+	ret = ctx->profile->update_output_status(ctx);
+	if (ret)
+		goto out;
+
 	/* Create JSON object */
 	root_obj = json_object_new_object();
 
@@ -143,6 +148,8 @@ void poemgr_show(struct poemgr_ctx *ctx)
 
 	/* Get PoE output information */
 	output_obj = json_object_new_object();
+
+	json_object_object_add(output_obj, "power_budget", json_object_new_int(ctx->output_status.power_budget));
 
 	/* Get port information */
 	ports_obj = json_object_new_object();

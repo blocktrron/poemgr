@@ -36,6 +36,7 @@ struct poemgr_profile {
 	int (*init)(struct poemgr_ctx *);
 	int (*update_port_status)(struct poemgr_ctx *);
 	int (*update_input_status)(struct poemgr_ctx *);
+	int (*update_output_status)(struct poemgr_ctx *);
 };
 
 struct poemgr_port_settings {
@@ -63,6 +64,11 @@ struct poemgr_input_status {
 	time_t last_update;
 };
 
+struct poemgr_output_status {
+	int power_budget;
+
+	time_t last_update;
+};
 
 struct poemgr_settings {
 	int enabled;
@@ -75,4 +81,5 @@ struct poemgr_ctx {
 	struct poemgr_profile *profile;
 
 	struct poemgr_input_status input_status;
+	struct poemgr_output_status output_status;
 };
