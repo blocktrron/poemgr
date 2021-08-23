@@ -43,7 +43,7 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 
 	/* Toggle FlipFlop */
 	/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
-	system("/usr/lib/poemgr/uswlite-pse-enable");
+	system("/usr/lib/poemgr/uswlite-pse-enable &> /dev/null");
 
 	/* Init PD69104 */
 	if (pd69104_init(&psechip, 0, 0x20))

@@ -7,5 +7,5 @@ echo out > /sys/class/gpio/gpio487/direction &> /dev/null
 echo out > /sys/class/gpio/gpio488/direction &> /dev/null
 
 echo 0 > /sys/class/gpio/gpio487/value &> /dev/null
-echo 0 > /sys/class/gpio/gpio487/value &> /dev/null
-echo 1 > /sys/class/gpio/gpio487/value &> /dev/null
+echo 0 > /sys/class/gpio/gpio488/value &> /dev/null
+echo 1 > /sys/class/gpio/gpio488/value &> /dev/null
