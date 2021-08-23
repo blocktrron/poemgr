@@ -22,7 +22,7 @@ static inline const char *poemgr_poe_type_to_string(int poe_type)
 	if (poe_type == POEMGR_POE_TYPE_BT)
 		return "802.3bt";
 
-	return NULL;
+	return "unknown";
 }
 
 struct poemgr_ctx;
@@ -35,7 +35,7 @@ struct poemgr_profile {
 
 	int (*init)(struct poemgr_ctx *);
 	int (*update_port_status)(struct poemgr_ctx *);
-	int (*update_pse_status)(struct poemgr_ctx *);
+	int (*update_input_status)(struct poemgr_ctx *);
 };
 
 struct poemgr_port_settings {
@@ -57,6 +57,13 @@ struct poemgr_port {
 	struct poemgr_port_status status;
 };
 
+struct poemgr_input_status {
+	int type;
+
+	time_t last_update;
+};
+
+
 struct poemgr_settings {
 	int enabled;
 	char *profile;
@@ -66,4 +73,6 @@ struct poemgr_ctx {
 	struct poemgr_settings settings;
 	struct poemgr_port ports[POEMGR_MAX_PORTS];
 	struct poemgr_profile *profile;
+
+	struct poemgr_input_status input_status;
 };
