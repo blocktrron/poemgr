@@ -87,3 +87,13 @@ int pd69104_pwrgd_pin_status_get(struct pd69104_priv *priv)
 {
 	return (pd69104_rr(priv, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
 }
+
+int pd69104_port_power_limit_get(struct pd69104_priv *priv, int port)
+{
+	return PD69104_REG_PWR_CR_PAL_MASK & pd69104_rr(priv, PD69104_REG_PWR_CR(port));
+}
+
+int pd69104_port_power_limit_set(struct pd69104_priv *priv, int port, int val)
+{
+	return pd69104_wr(priv, PD69104_REG_PWR_CR(port), PD69104_REG_PWR_CR_PAL_MASK & val);
+}
