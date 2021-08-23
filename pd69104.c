@@ -82,3 +82,8 @@ int pd69104_port_power_consumption_get(struct pd69104_priv *priv, int port)
 {
 	return pd69104_rr(priv, PD69104_REG_PORT_CONS(port));
 }
+
+int pd69104_pwrgd_pin_status_get(struct pd69104_priv *priv, int port)
+{
+	return (pd69104_rr(priv, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
+}
