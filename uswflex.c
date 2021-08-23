@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "poemgr.h"
 #include "pd69104.h"
 
@@ -6,7 +8,9 @@
 static struct pd69104_priv psechip;
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
-	/* ToDo: Toggle shift register */
+	/* Toggle FlipFlop */
+	/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
+	system("/usr/lib/poemgr/uswlite-pse-enable");
 
 	/* Init PD69104 */
 	if (pd69104_init(&psechip, 0, 0x20))
