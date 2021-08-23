@@ -16,4 +16,4 @@ int pd69104_end(struct pd69104_priv *ctx);
 
 int pd69104_port_power_consumption_get(struct pd69104_priv *priv, int port);
 
-int pd69104_pwrgd_pin_status_get(struct pd69104_priv *priv, int port);
+int pd69104_pwrgd_pin_status_get(struct pd69104_priv *priv);
