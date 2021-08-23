@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <uci.h>
+#include <json-c/json.h>
 
 #include "poemgr.h"
 
@@ -116,6 +117,48 @@ out:
 	return ret;
 }
 
+void poemgr_show(struct poemgr_ctx *ctx)
+{
+	struct json_object *root_obj, *ports_obj, *port_obj, *pse_obj;
+	char port_idx[3];
+	int ret = 0;
+
+	/* Update port status */
+	ret = ctx->profile->update_port_status(ctx);
+	if (ret)
+		goto out;
+
+	/* Create JSON object */
+	root_obj = json_object_new_object();
+	/* Get port information */
+	ports_obj = json_object_new_object();
+	for (int i = 0; i < ctx->profile->num_ports; i++) {
+		snprintf(port_idx, 3, "%d", i);
+		port_obj = json_object_new_object();
+		json_object_object_add(port_obj, "enabled", json_object_new_boolean(!!ctx->ports[i].status.enabled));
+		json_object_object_add(port_obj, "power", json_object_new_int(ctx->ports[i].status.power));
+		json_object_object_add(port_obj, "power_limit", json_object_new_int(ctx->ports[i].status.power_limit));
+
+		/* ToDo: Export PSE specific data */
+
+		json_object_object_add(ports_obj, port_idx, port_obj);
+	}
+	json_object_object_add(root_obj, "ports", ports_obj);
+
+	pse_obj = json_object_new_object();
+	/* ToDo: Call PSE output method */
+	json_object_object_add(root_obj, "pse", pse_obj);
+
+	/* Save to char pointer */
+	const char *c = json_object_to_json_string_ext(root_obj, JSON_C_TO_STRING_PRETTY);
+
+	fprintf(stdout, "%s\n", c);
+	json_object_put(root_obj);
+
+out:
+	return;
+}
+
 int main(int argc, char *argv[])
 {
 	static struct poemgr_profile *profile;
@@ -152,6 +195,7 @@ int main(int argc, char *argv[])
 	
 	if (!strcmp(POEMGR_ACTION_STRING_SHOW, action)) {
 		/* Show */
+		poemgr_show(&ctx);
 	} else if (!strcmp(POEMGR_ACTION_STRING_APPLY, action)) {
 		/* Apply */
 	}
