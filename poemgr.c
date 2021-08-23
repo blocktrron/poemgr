@@ -25,8 +25,10 @@ static int load_port_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ct
 	struct uci_section *s;
 	int ret = 0;
 
-	if (uci_load(uci_ctx, "poemgr", &package) != UCI_OK) {
-		ret = -1;
+	package = uci_lookup_package(uci_ctx, "poemgr");
+
+	if (!package) {
+		ret = 1;
 		goto out;
 	}
 
