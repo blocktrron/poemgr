@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "poemgr.h"
 #include "pd69104.h"
@@ -7,7 +8,39 @@
 
 static struct pd69104_priv psechip;
 
+static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
+{
+	int reg;
+
+	/* PSE has 4 input pins (4 bits in register), the USW-Flex only cares for the first 3 LSB */
+	reg = pd69104_pwrgd_pin_status_get(&psechip) & 0x7;
+	if (reg < 0)
+		return -1;
+
+	switch(reg) {
+		case 0:
+		/* 1: Non-standard PoE++ */
+		case 1:
+		case 2:
+		/* 3: Included adapter */
+		case 3:
+		case 4:
+		case 6:
+			return POEMGR_POE_TYPE_BT;
+		case 5:
+			return POEMGR_POE_TYPE_AT;
+		case 7:
+			return POEMGR_POE_TYPE_AF;
+		default:
+			fprintf(stderr, "Unknown PoE input 0x%02X\n", reg);
+	}
+
+	return -1;
+}
+
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
+	int poe_type = poemgr_uswflex_read_power_input(&psechip);
+
 	/* Toggle FlipFlop */
 	/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
 	system("/usr/lib/poemgr/uswlite-pse-enable");
