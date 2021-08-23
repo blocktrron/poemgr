@@ -39,7 +39,7 @@ static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
 }
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
-	int poe_type = poemgr_uswflex_read_power_input(&psechip);
+	int poe_type = poemgr_uswflex_read_power_input(ctx);
 
 	/* Toggle FlipFlop */
 	/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
