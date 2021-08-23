@@ -13,6 +13,18 @@ enum {
 	POEMGR_POE_TYPE_BT = 0x4,
 };
 
+static inline const char *poemgr_poe_type_to_string(int poe_type)
+{
+	if (poe_type == POEMGR_POE_TYPE_AF)
+		return "802.3af";
+	if (poe_type == POEMGR_POE_TYPE_AT)
+		return "802.3at";
+	if (poe_type == POEMGR_POE_TYPE_BT)
+		return "802.3bt";
+
+	return NULL;
+}
+
 struct poemgr_ctx;
 
 struct poemgr_profile {
