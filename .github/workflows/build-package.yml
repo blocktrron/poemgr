@@ -1,0 +1,9 @@
+name: Build poemgr opkg package
+on: [push, pull_request]
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    steps:
+      - mkdir "poemgr"
+      - uses: actions/checkout@v2
+        working-directory: poemgr
