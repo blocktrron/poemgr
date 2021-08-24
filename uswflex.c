@@ -68,7 +68,7 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 	return 0;
 }
 
-static int poemgr_uswflex_update_single_port_status(struct poemgr_ctx *ctx, int port)
+static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx, int port)
 {
 	struct poemgr_port_status *port_status = &ctx->ports[port].status;
 
@@ -78,14 +78,6 @@ static int poemgr_uswflex_update_single_port_status(struct poemgr_ctx *ctx, int 
 	port_status->enabled = !!port_status->power_limit;
 
 	return 0;
-}
-
-
-static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx)
-{
-	for (int i = 0; i < USWLFEX_NUM_PORTS; i++) {
-		poemgr_uswflex_update_single_port_status(ctx, i);
-	}
 }
 
 static int poemgr_uswflex_update_output_status(struct poemgr_ctx *ctx)

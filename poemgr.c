@@ -124,9 +124,11 @@ void poemgr_show(struct poemgr_ctx *ctx)
 	int ret = 0;
 
 	/* Update port status */
-	ret = ctx->profile->update_port_status(ctx);
-	if (ret)
-		goto out;
+	for (int p_idx = 0; p_idx < ctx->profile->num_ports; p_idx++) {
+		ret = ctx->profile->update_port_status(ctx, p_idx);
+		if (ret)
+			goto out;
+	}
 
 	/* Update input status */
 	ret = ctx->profile->update_input_status(ctx);
