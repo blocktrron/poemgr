@@ -5,6 +5,9 @@
 #include "pd69104.h"
 
 #define USWLFEX_NUM_PORTS	4
+#define USWLFEX_NUM_PSE_CHIPS	1
+#define USWLFEX_NUM_PSE_CHIP_IDX	0
+#define USWFLEX_PSE_PORTMASK	0xF
 
 #define USWLFEX_OWN_POWER_BUDGET	5	/* Own power budget */
 
@@ -12,10 +15,11 @@ static struct pd69104_priv psechip;
 
 static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
 {
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
 	int reg;
 
 	/* PSE has 4 input pins (4 bits in register), the USW-Flex only cares for the first 3 LSB */
-	reg = pd69104_pwrgd_pin_status_get(&psechip) & 0x7;
+	reg = pd69104_pwrgd_pin_status_get(psechip) & 0x7;
 	if (reg < 0)
 		return -1;
 
@@ -55,14 +59,14 @@ static int poemgr_uswflex_get_power_budget(int poe_type)
 }
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
-	int poe_type = poemgr_uswflex_read_power_input(ctx);
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
 
 	/* Toggle FlipFlop */
 	/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
 	system("/usr/lib/poemgr/uswlite-pse-enable &> /dev/null");
 
 	/* Init PD69104 */
-	if (pd69104_init(&psechip, 0, 0x20))
+	if (pd69104_init(psechip, 0, 0x20, USWFLEX_PSE_PORTMASK))
 		return 1;
 
 	return 0;
@@ -70,11 +74,12 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 
 static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx, int port)
 {
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
 	struct poemgr_port_status *port_status = &ctx->ports[port].status;
 
-	port_status->power = pd69104_port_power_consumption_get(&psechip, port);
+	port_status->power = pd69104_port_power_consumption_get(psechip, port);
 	port_status->active = !!port_status->power;
-	port_status->power_limit = pd69104_port_power_limit_get(&psechip, port);
+	port_status->power_limit = pd69104_port_power_limit_get(psechip, port);
 	port_status->enabled = !!port_status->power_limit;
 
 	return 0;
@@ -101,5 +106,5 @@ struct poemgr_profile poemgr_profile_uswflex = {
 	.update_port_status = &poemgr_uswflex_update_port_status,
 	.update_output_status = &poemgr_uswflex_update_output_status,
 	.update_input_status = &poemgr_uswflex_update_input_status,
-	.priv = &psechip,
+	.num_pse_chips = USWLFEX_NUM_PSE_CHIPS,
 };

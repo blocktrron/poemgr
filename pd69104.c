@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -14,6 +15,9 @@
 #define I2C_SMBUS_READ	1
 #define I2C_SMBUS_WRITE	0
 
+static struct pd69104_priv *pd69104_priv(struct poemgr_pse_chip *pse_chip) {
+	return (struct pd69104_priv *) pse_chip->priv;
+}
 
 static int32_t i2c_smbus_access(int file, char read_write, uint8_t command, int size, char *data)
 {
@@ -27,8 +31,9 @@ static int32_t i2c_smbus_access(int file, char read_write, uint8_t command, int 
 }
 
 
-static int pd69104_wr(struct pd69104_priv *priv, uint8_t reg, uint8_t val)
+static int pd69104_wr(struct poemgr_pse_chip *pse_chip, uint8_t reg, uint8_t val)
 {
+	struct pd69104_priv *priv = pd69104_priv(pse_chip);
 	union i2c_smbus_data data;
 
 	data.byte = val;
@@ -37,8 +42,9 @@ static int pd69104_wr(struct pd69104_priv *priv, uint8_t reg, uint8_t val)
 							2, (char *) &data);
 }
 
-static int pd69104_rr(struct pd69104_priv *priv, uint8_t reg)
+static int pd69104_rr(struct poemgr_pse_chip *pse_chip, uint8_t reg)
 {
+	struct pd69104_priv *priv = pd69104_priv(pse_chip);
 	union i2c_smbus_data data;
 
 	if (i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_READ, reg, 2, (char *) &data))
@@ -47,10 +53,15 @@ static int pd69104_rr(struct pd69104_priv *priv, uint8_t reg)
 	return 0x0FF & data.byte;
 }
 
-int pd69104_init(struct pd69104_priv *priv, int i2c_bus, int i2c_addr)
+int pd69104_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr, uint32_t port_mask)
 {
+	struct pd69104_priv *priv;
 	char i2cpath[30];
 	int fd;
+
+	priv = malloc(sizeof(struct pd69104_priv));
+	if (!priv)
+		return 1;
 
 	priv->i2c_addr = i2c_addr;
 
@@ -70,30 +81,38 @@ int pd69104_init(struct pd69104_priv *priv, int i2c_bus, int i2c_addr)
 
 	priv->i2c_fd = fd;
 
+	pse_chip->priv = (void *) priv;
+	pse_chip->portmask = port_mask;
+	pse_chip->model = "PD69104";
+
 	return 0;
 }
 
-int pd69104_end(struct pd69104_priv *priv)
+int pd69104_end(struct poemgr_pse_chip *pse_chip)
 {
-	return !!close(priv->i2c_fd);
+	struct pd69104_priv *priv = pd69104_priv(pse_chip);
+	int ret = !!close(priv->i2c_fd);
+
+	free(priv);
+	return ret;
 }
 
-int pd69104_port_power_consumption_get(struct pd69104_priv *priv, int port)
+int pd69104_port_power_consumption_get(struct poemgr_pse_chip *pse_chip, int port)
 {
-	return pd69104_rr(priv, PD69104_REG_PORT_CONS(port));
+	return pd69104_rr(pse_chip, PD69104_REG_PORT_CONS(port));
 }
 
-int pd69104_pwrgd_pin_status_get(struct pd69104_priv *priv)
+int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip)
 {
-	return (pd69104_rr(priv, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
+	return (pd69104_rr(pse_chip, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
 }
 
-int pd69104_port_power_limit_get(struct pd69104_priv *priv, int port)
+int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port)
 {
-	return PD69104_REG_PWR_CR_PAL_MASK & pd69104_rr(priv, PD69104_REG_PWR_CR(port));
+	return PD69104_REG_PWR_CR_PAL_MASK & pd69104_rr(pse_chip, PD69104_REG_PWR_CR(port));
 }
 
-int pd69104_port_power_limit_set(struct pd69104_priv *priv, int port, int val)
+int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int val)
 {
-	return pd69104_wr(priv, PD69104_REG_PWR_CR(port), PD69104_REG_PWR_CR_PAL_MASK & val);
+	return pd69104_wr(pse_chip, PD69104_REG_PWR_CR(port), PD69104_REG_PWR_CR_PAL_MASK & val);
 }

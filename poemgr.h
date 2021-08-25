@@ -98,3 +98,8 @@ struct poemgr_ctx {
 	struct poemgr_input_status input_status;
 	struct poemgr_output_status output_status;
 };
+
+static inline struct poemgr_pse_chip *poemgr_profile_pse_chip_get(struct poemgr_profile *profile, int pse_idx)
+{
+	return &profile->pse_chips[pse_idx];
+} 
