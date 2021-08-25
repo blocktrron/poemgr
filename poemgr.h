@@ -1,8 +1,10 @@
 #pragma once
 
 #include <time.h>
+#include <stdint.h>
 
 #define POEMGR_MAX_PORTS	4
+#define POEMGR_MAX_PSE_CHIPS	2
 
 #define POEMGR_ACTION_STRING_SHOW	"show"
 #define POEMGR_ACTION_STRING_APPLY	"apply"
@@ -27,9 +29,21 @@ static inline const char *poemgr_poe_type_to_string(int poe_type)
 
 struct poemgr_ctx;
 
+struct poemgr_pse_chip {
+	const char *model;
+
+	uint32_t portmask;
+	int temperature;
+
+	void *priv;
+};
+
 struct poemgr_profile {
 	char *name;
 	int num_ports;
+
+	struct poemgr_pse_chip pse_chips[POEMGR_MAX_PSE_CHIPS];
+	int num_pse_chips;
 
 	void *priv;
 
