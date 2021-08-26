@@ -6,6 +6,8 @@
 #define POEMGR_MAX_PORTS	4
 #define POEMGR_MAX_PSE_CHIPS	2
 
+#define POEMGR_MAX_METRICS		10
+
 #define POEMGR_ACTION_STRING_SHOW	"show"
 #define POEMGR_ACTION_STRING_APPLY	"apply"
 
@@ -13,6 +15,10 @@ enum {
 	POEMGR_POE_TYPE_AF = 0x1,
 	POEMGR_POE_TYPE_AT = 0x2,
 	POEMGR_POE_TYPE_BT = 0x4,
+};
+
+enum poemgr_metric_type {
+	POEMGR_METRIC_INT32,
 };
 
 static inline const char *poemgr_poe_type_to_string(int poe_type)
@@ -29,13 +35,27 @@ static inline const char *poemgr_poe_type_to_string(int poe_type)
 
 struct poemgr_ctx;
 
+struct poemgr_pse_chip;
+
+struct poemgr_metric {
+	enum poemgr_metric_type type;
+	char *name;
+	union {
+		char *val_char;
+		int32_t val_int32;
+	};
+};
+
 struct poemgr_pse_chip {
 	const char *model;
 
 	uint32_t portmask;
-	int temperature;
 
 	void *priv;
+
+	/* Metrics */
+	int num_metrics;
+	int (*export_metric)(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric);
 };
 
 struct poemgr_profile {

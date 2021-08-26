@@ -117,9 +117,11 @@ out:
 	return ret;
 }
 
-void poemgr_show(struct poemgr_ctx *ctx)
+int poemgr_show(struct poemgr_ctx *ctx)
 {
-	struct json_object *root_obj, *ports_obj, *port_obj, *pse_obj, *input_obj, *output_obj;
+	struct json_object *root_obj, *ports_obj, *port_obj, *pse_arr, *pse_obj, *input_obj, *output_obj;
+	struct poemgr_pse_chip *pse_chip;
+	struct poemgr_metric metric_buf;
 	char port_idx[3];
 	int ret = 0;
 
@@ -174,18 +176,41 @@ void poemgr_show(struct poemgr_ctx *ctx)
 
 	json_object_object_add(root_obj, "output", output_obj);
 
-	pse_obj = json_object_new_object();
-	/* ToDo: Call PSE output method */
-	json_object_object_add(root_obj, "pse", pse_obj);
+	pse_arr = json_object_new_array();
+	json_object_object_add(root_obj, "pse", pse_arr);
+	for (int i = 0; i < ctx->profile->num_pse_chips; i++) {
+		pse_chip = &ctx->profile->pse_chips[i];
+		pse_obj = json_object_new_object();
+		json_object_array_add(pse_arr, pse_obj);
+
+		json_object_object_add(pse_obj, "model", json_object_new_string(pse_chip->model));
+
+		for (int j = 0; j < pse_chip->num_metrics; j++) {
+			ret = pse_chip->export_metric(pse_chip, &metric_buf, j);
+			if (ret)
+				goto out;
+
+			/* ToDo handle memory in case of error */
+			switch (metric_buf.type) {
+				case POEMGR_METRIC_INT32:
+					json_object_object_add(pse_obj, metric_buf.name, json_object_new_int(metric_buf.val_int32));
+					break;
+				default:
+					ret = 1;
+					goto out;
+			}
+		}
+	}
+	
 
 	/* Save to char pointer */
 	const char *c = json_object_to_json_string_ext(root_obj, JSON_C_TO_STRING_PRETTY);
 
 	fprintf(stdout, "%s\n", c);
-	json_object_put(root_obj);
 
 out:
-	return;
+	json_object_put(root_obj);
+	return ret;
 }
 
 int main(int argc, char *argv[])

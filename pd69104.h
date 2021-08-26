@@ -21,3 +21,5 @@ int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip);
 int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int val);
+
+int pd69104_export_metric(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric);

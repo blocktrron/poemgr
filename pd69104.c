@@ -53,6 +53,45 @@ static int pd69104_rr(struct poemgr_pse_chip *pse_chip, uint8_t reg)
 	return 0x0FF & data.byte;
 }
 
+int pd69104_port_power_consumption_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+	return pd69104_rr(pse_chip, PD69104_REG_PORT_CONS(port));
+}
+
+int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip)
+{
+	return (pd69104_rr(pse_chip, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
+}
+
+int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+	return PD69104_REG_PWR_CR_PAL_MASK & pd69104_rr(pse_chip, PD69104_REG_PWR_CR(port));
+}
+
+int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int val)
+{
+	return pd69104_wr(pse_chip, PD69104_REG_PWR_CR(port), PD69104_REG_PWR_CR_PAL_MASK & val);
+}
+
+static int pd69104_vtemp_get(struct poemgr_pse_chip *pse_chip)
+{
+	return pd69104_rr(pse_chip, PD69104_REG_VTEMP);
+}
+
+int pd69104_export_metric(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric)
+{
+	if (metric < 0 || metric >= pse_chip->num_metrics)
+		return -1;
+
+	if (metric == 0) {
+		output->type = POEMGR_METRIC_INT32;
+		output->name = "temperature";
+		output->val_int32 = ((int) pd69104_vtemp_get(pse_chip) * 0.96) - 27;
+	}
+
+	return 0;
+}
+
 int pd69104_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr, uint32_t port_mask)
 {
 	struct pd69104_priv *priv;
@@ -84,6 +123,8 @@ int pd69104_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr, ui
 	pse_chip->priv = (void *) priv;
 	pse_chip->portmask = port_mask;
 	pse_chip->model = "PD69104";
+	pse_chip->num_metrics = 1;
+	pse_chip->export_metric = &pd69104_export_metric;
 
 	return 0;
 }
@@ -95,24 +136,4 @@ int pd69104_end(struct poemgr_pse_chip *pse_chip)
 
 	free(priv);
 	return ret;
-}
-
-int pd69104_port_power_consumption_get(struct poemgr_pse_chip *pse_chip, int port)
-{
-	return pd69104_rr(pse_chip, PD69104_REG_PORT_CONS(port));
-}
-
-int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip)
-{
-	return (pd69104_rr(pse_chip, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
-}
-
-int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port)
-{
-	return PD69104_REG_PWR_CR_PAL_MASK & pd69104_rr(pse_chip, PD69104_REG_PWR_CR(port));
-}
-
-int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int val)
-{
-	return pd69104_wr(pse_chip, PD69104_REG_PWR_CR(port), PD69104_REG_PWR_CR_PAL_MASK & val);
 }
