@@ -88,7 +88,10 @@ static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx, int port)
 
 static int poemgr_uswflex_update_output_status(struct poemgr_ctx *ctx)
 {
-	ctx->output_status.power_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
+	int poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
+	
+	ctx->output_status.power_budget = poe_budget;
 
 	return 0;
 }
