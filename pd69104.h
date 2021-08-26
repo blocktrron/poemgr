@@ -22,4 +22,8 @@ int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int val);
 
+int pd69104_system_power_budget_get(struct poemgr_pse_chip *pse_chip, int bank);
+
+int pd69104_system_power_budget_set(struct poemgr_pse_chip *pse_chip, int bank, int val);
+
 int pd69104_export_metric(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric);

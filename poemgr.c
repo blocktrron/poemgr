@@ -213,6 +213,14 @@ out:
 	return ret;
 }
 
+int poemgr_apply(struct poemgr_ctx *ctx)
+{
+	if (!ctx->profile->apply_config)
+		return 0;
+	
+	return ctx->profile->apply_config(ctx);
+}
+
 int main(int argc, char *argv[])
 {
 	static struct poemgr_profile *profile;
@@ -252,6 +260,7 @@ int main(int argc, char *argv[])
 		poemgr_show(&ctx);
 	} else if (!strcmp(POEMGR_ACTION_STRING_APPLY, action)) {
 		/* Apply */
+		poemgr_apply(&ctx);
 	}
 
 	return 0;

@@ -68,6 +68,7 @@ struct poemgr_profile {
 	void *priv;
 
 	int (*init)(struct poemgr_ctx *);
+	int (*apply_config)(struct poemgr_ctx *);
 	int (*update_port_status)(struct poemgr_ctx *, int port);
 	int (*update_input_status)(struct poemgr_ctx *);
 	int (*update_output_status)(struct poemgr_ctx *);

@@ -3,6 +3,7 @@
 
 #include "poemgr.h"
 #include "pd69104.h"
+#include "pd69104_regs.h"
 
 #define USWLFEX_NUM_PORTS	4
 #define USWLFEX_NUM_PSE_CHIPS	1
@@ -99,10 +100,38 @@ static int poemgr_uswflex_update_input_status(struct poemgr_ctx *ctx)
 	return 0;
 }
 
+static int poemgr_uswflex_apply_config(struct poemgr_ctx *ctx)
+{
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
+	int poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
+	int ret = 0;
+
+	/* Set global power limit (Input - CPU)
+	 * Write this to all banks (a bank maps to the state of PGD[2:0]).
+	 */
+	for (int i = 0; i < PD69104_REG_PWR_BNK_NUM_BANKS; i++) {
+		ret = pd69104_system_power_budget_set(psechip, i, poe_budget);
+		if (ret < 0)
+			goto out;
+	}
+
+	/* Set output limit per port */
+	for (int i = 0; i < USWLFEX_NUM_PORTS; i++) {
+		ret = pd69104_port_power_limit_set(psechip, i, poe_budget);
+		if (ret < 0)
+			goto out;
+	}
+
+	/* ToDo: Set output priority */
+out:
+	return 0;
+}
+
 struct poemgr_profile poemgr_profile_uswflex = {
 	.name = "usw-flex",
 	.num_ports = USWLFEX_NUM_PORTS,
 	.init = &poemgr_uswflex_init_chip,
+	.apply_config = &poemgr_uswflex_apply_config,
 	.update_port_status = &poemgr_uswflex_update_port_status,
 	.update_output_status = &poemgr_uswflex_update_output_status,
 	.update_input_status = &poemgr_uswflex_update_input_status,

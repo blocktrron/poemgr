@@ -73,6 +73,16 @@ int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int
 	return pd69104_wr(pse_chip, PD69104_REG_PWR_CR(port), PD69104_REG_PWR_CR_PAL_MASK & val);
 }
 
+int pd69104_system_power_budget_get(struct poemgr_pse_chip *pse_chip, int bank)
+{
+	return pd69104_rr(pse_chip, PD69104_REG_PWR_BNK(bank));
+}
+
+int pd69104_system_power_budget_set(struct poemgr_pse_chip *pse_chip, int bank, int val)
+{
+	return pd69104_wr(pse_chip, PD69104_REG_PWR_BNK(bank), val);
+}
+
 static int pd69104_vtemp_get(struct poemgr_pse_chip *pse_chip)
 {
 	return pd69104_rr(pse_chip, PD69104_REG_VTEMP);
