@@ -98,6 +98,8 @@ struct poemgr_port_status {
 	int power_limit;
 	int power;
 
+	int faults;
+
 	time_t last_update;
 };
 
