@@ -88,6 +88,57 @@ static int pd69104_vtemp_get(struct poemgr_pse_chip *pse_chip)
 	return pd69104_rr(pse_chip, PD69104_REG_VTEMP);
 }
 
+int pd69104_port_faults_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+
+	int psr = (pd69104_rr(pse_chip, PD69104_REG_PORT_SR(port)) & PD69104_REG_PORT_SR_MASK(port)) >> PD69104_REG_PORT_SR_SHIFT(port);
+	int statp = pd69104_rr(pse_chip, PD69104_REG_STATP(port));
+	int detection_result = (statp & PD69104_REG_STATP_DETECTION_MASK) >> PD69104_REG_STATP_DETECTION_SHIFT;
+	int classification_result = (statp & PD69104_REG_STATP_CLASSIFICATION_MASK) >> PD69104_REG_STATP_CLASSIFICATION_SHIFT;
+	int faults = 0;
+
+	if (psr < 0 || statp < 0)
+		return -1;
+
+	switch (detection_result) {
+		case PD69104_REG_STATP_DETECTION_SHORT_CIRCUIT:
+			faults |= POEMGR_FAULT_TYPE_SHORT_CIRCUIT;
+			break;
+		case PD69104_REG_STATP_DETECTION_CPD_TOO_HIGH:
+			faults |= POEMGR_FAULT_TYPE_CAPACITY_TOO_HIGH;
+			break;
+		case PD69104_REG_STATP_DETECTION_RSIG_TOO_LOW:
+			faults |= POEMGR_FAULT_TYPE_RESISTANCE_TOO_LOW;
+			break;
+		case PD69104_REG_STATP_DETECTION_RSIG_TOO_HIGH:
+			faults |= POEMGR_FAULT_TYPE_RESISTANCE_TOO_HIGH;
+			break;		
+		case PD69104_REG_STATP_DETECTION_RSIG_OPEN_CIRCUIT:
+			faults |= POEMGR_FAULT_TYPE_OPEN_CIRCUIT;
+			break;
+		default:
+			break;
+	}
+
+	switch (classification_result) {
+		case PD69104_REG_STATP_CLASSIFICATION_OVER_CURRENT:
+			faults |= POEMGR_FAULT_TYPE_OVER_CURRENT;
+			break;
+		default:
+			break;
+	}
+
+	if (psr & PD69104_REG_PORT_SR_OVER_TEMP) {
+		faults |= POEMGR_FAULT_TYPE_OVER_TEMPERATURE;
+	}
+
+	if (psr & PD69104_REG_PORT_SR_OFF_PM) {
+		faults |= POEMGR_FAULT_TYPE_POWER_MANAGEMENT;
+	}
+
+	return faults;
+}
+
 int pd69104_export_metric(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric)
 {
 	if (metric < 0 || metric >= pse_chip->num_metrics)
