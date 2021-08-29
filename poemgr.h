@@ -11,7 +11,7 @@
 #define POEMGR_ACTION_STRING_SHOW	"show"
 #define POEMGR_ACTION_STRING_APPLY	"apply"
 
-enum {
+enum poemgr_poe_type {
 	POEMGR_POE_TYPE_AF = 0x1,
 	POEMGR_POE_TYPE_AT = 0x2,
 	POEMGR_POE_TYPE_BT = 0x4,
@@ -21,7 +21,7 @@ enum poemgr_metric_type {
 	POEMGR_METRIC_INT32,
 };
 
-static inline const char *poemgr_poe_type_to_string(int poe_type)
+static inline const char *poemgr_poe_type_to_string(enum poemgr_poe_type poe_type)
 {
 	if (poe_type == POEMGR_POE_TYPE_AF)
 		return "802.3af";
@@ -95,7 +95,7 @@ struct poemgr_port {
 };
 
 struct poemgr_input_status {
-	int type;
+	enum poemgr_poe_type type;
 
 	time_t last_update;
 };

@@ -14,7 +14,7 @@
 
 static struct pd69104_priv psechip;
 
-static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
+static enum poemgr_poe_type poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
 {
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
 	int reg;
@@ -45,7 +45,7 @@ static int poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
 	return -1;
 }
 
-static int poemgr_uswflex_get_power_budget(int poe_type)
+static int poemgr_uswflex_get_power_budget(enum poemgr_poe_type poe_type)
 {
 	/* Watts */
 	switch (poe_type) {
