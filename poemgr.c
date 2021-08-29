@@ -117,6 +117,32 @@ out:
 	return ret;
 }
 
+static json_object *poemgr_create_port_fault_array(int faults)
+{
+	struct json_object *arr = json_object_new_array();
+
+	if (faults & POEMGR_FAULT_TYPE_POWER_MANAGEMENT)
+		json_object_array_add(arr, json_object_new_string("power-budget-exceeded"));
+	if (faults & POEMGR_FAULT_TYPE_OVER_TEMPERATURE)
+		json_object_array_add(arr, json_object_new_string("over-temperature"));
+	if (faults & POEMGR_FAULT_TYPE_SHORT_CIRCUIT)
+		json_object_array_add(arr, json_object_new_string("short-circuit"));
+	if (faults & POEMGR_FAULT_TYPE_RESISTANCE_TOO_LOW)
+		json_object_array_add(arr, json_object_new_string("resistance-too-low"));
+	if (faults & POEMGR_FAULT_TYPE_RESISTANCE_TOO_HIGH)
+		json_object_array_add(arr, json_object_new_string("resistance-too-high"));
+	if (faults & POEMGR_FAULT_TYPE_CAPACITY_TOO_HIGH)
+		json_object_array_add(arr, json_object_new_string("capacity-too-high"));
+	if (faults & POEMGR_FAULT_TYPE_OPEN_CIRCUIT)
+		json_object_array_add(arr, json_object_new_string("open-circuit"));
+	if (faults & POEMGR_FAULT_TYPE_OVER_CURRENT)
+		json_object_array_add(arr, json_object_new_string("over-current"));
+	if (faults & POEMGR_FAULT_TYPE_UNKNOWN)
+		json_object_array_add(arr, json_object_new_string("unknown"));
+
+	return arr;
+}
+
 int poemgr_show(struct poemgr_ctx *ctx)
 {
 	struct json_object *root_obj, *ports_obj, *port_obj, *pse_arr, *pse_obj, *input_obj, *output_obj;
@@ -167,7 +193,7 @@ int poemgr_show(struct poemgr_ctx *ctx)
 		json_object_object_add(port_obj, "active", json_object_new_boolean(!!ctx->ports[i].status.active));
 		json_object_object_add(port_obj, "power", json_object_new_int(ctx->ports[i].status.power));
 		json_object_object_add(port_obj, "power_limit", json_object_new_int(ctx->ports[i].status.power_limit));
-
+		json_object_object_add(port_obj, "faults", poemgr_create_port_fault_array(ctx->ports[i].status.faults));
 		/* ToDo: Export PSE specific data */
 
 		json_object_object_add(ports_obj, port_idx, port_obj);
