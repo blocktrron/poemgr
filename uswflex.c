@@ -82,6 +82,7 @@ static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx, int port)
 	port_status->active = !!port_status->power;
 	port_status->power_limit = pd69104_port_power_limit_get(psechip, port);
 	port_status->enabled = !!port_status->power_limit;
+	port_status->faults = pd69104_port_faults_get(psechip, port);
 
 	return 0;
 }
