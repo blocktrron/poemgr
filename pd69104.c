@@ -53,6 +53,19 @@ static int pd69104_rr(struct poemgr_pse_chip *pse_chip, uint8_t reg)
 	return 0x0FF & data.byte;
 }
 
+int pd69104_device_online(struct poemgr_pse_chip *pse_chip)
+{
+	int id_reg = pd69104_rr(pse_chip, PD69104_REG_ID);
+
+	if (id_reg < 0)
+		return 0;
+
+	if (((id_reg & PD69104_REG_ID_DEV_MASK) >> PD69104_REG_ID_DEV_SHIFT) != 0x5)
+		return 0;
+	
+	return 1;
+}
+
 int pd69104_port_power_consumption_get(struct poemgr_pse_chip *pse_chip, int port)
 {
 	return pd69104_rr(pse_chip, PD69104_REG_PORT_CONS(port));

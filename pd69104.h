@@ -14,6 +14,8 @@ int pd69104_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr, ui
 
 int pd69104_end(struct poemgr_pse_chip *pse_chip);
 
+int pd69104_device_online(struct poemgr_pse_chip *pse_chip);
+
 int pd69104_port_power_consumption_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip);
