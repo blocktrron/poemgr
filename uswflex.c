@@ -83,6 +83,7 @@ static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx, int port)
 	port_status->power_limit = pd69104_port_power_limit_get(psechip, port);
 	port_status->enabled = pd69104_port_operation_mode_get(psechip, port) == PD69104_REG_OPMD_AUTO;
 	port_status->faults = pd69104_port_faults_get(psechip, port);
+	port_status->poe_class = pd69104_port_poe_class_get(psechip, port);
 
 	return 0;
 }
