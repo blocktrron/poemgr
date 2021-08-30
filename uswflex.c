@@ -115,6 +115,7 @@ static int poemgr_uswflex_apply_config(struct poemgr_ctx *ctx)
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
 	int poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
 	struct poemgr_port_settings *port_settings;
+	int port_settings_available;
 	int port_opmode;
 	int ret = 0;
 
@@ -128,26 +129,24 @@ static int poemgr_uswflex_apply_config(struct poemgr_ctx *ctx)
 	}
 
 	for (int i = 0; i < USWLFEX_NUM_PORTS; i++) {
+		port_settings_available = !!port_settings->name;
+
+		/* Apply settings */
+		port_settings = &ctx->ports[i].settings;
+
+		/* Set port operation mode */
+		port_opmode = PD69104_REG_OPMD_AUTO;
+		if (port_settings->disabled || !port_settings_available)
+			port_opmode = PD69104_REG_OPMD_SHUTDOWN;
+		ret = pd69104_port_operation_mode_set(psechip, i, port_opmode);
+		if (ret < 0)
+			goto out;
+
 		/* Set output limit per port */
 		ret = pd69104_port_power_limit_set(psechip, i, poe_budget);
 		if (ret < 0)
 			goto out;
 
-		/* Apply settings */
-		port_settings = &ctx->ports[i].settings;
-
-		/* Check if settings for port are available */
-		if (!port_settings->name)
-			continue;
-
-		/* Set port operation mode */
-		port_opmode = PD69104_REG_OPMD_AUTO;
-		if (port_settings->disabled)
-			port_opmode = PD69104_REG_OPMD_SHUTDOWN;
-
-		ret = pd69104_port_operation_mode_set(psechip, i, port_opmode);
-		if (ret < 0)
-			goto out;
 	}
 
 	/* ToDo: Set output priority */
