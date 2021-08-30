@@ -191,6 +191,7 @@ int poemgr_show(struct poemgr_ctx *ctx)
 		port_obj = json_object_new_object();
 		json_object_object_add(port_obj, "enabled", json_object_new_boolean(!!ctx->ports[i].status.enabled));
 		json_object_object_add(port_obj, "active", json_object_new_boolean(!!ctx->ports[i].status.active));
+		json_object_object_add(port_obj, "poe_class", json_object_new_int(ctx->ports[i].status.poe_class));
 		json_object_object_add(port_obj, "power", json_object_new_int(ctx->ports[i].status.power));
 		json_object_object_add(port_obj, "power_limit", json_object_new_int(ctx->ports[i].status.power_limit));
 		json_object_object_add(port_obj, "faults", poemgr_create_port_fault_array(ctx->ports[i].status.faults));

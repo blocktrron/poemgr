@@ -97,6 +97,7 @@ struct poemgr_port_status {
 	int active;
 	int power_limit;
 	int power;
+	int poe_class;
 
 	int faults;
 
