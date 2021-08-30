@@ -129,10 +129,9 @@ static int poemgr_uswflex_apply_config(struct poemgr_ctx *ctx)
 	}
 
 	for (int i = 0; i < USWLFEX_NUM_PORTS; i++) {
-		port_settings_available = !!port_settings->name;
-
 		/* Apply settings */
 		port_settings = &ctx->ports[i].settings;
+		port_settings_available = !!port_settings->name;
 
 		/* Set port operation mode */
 		port_opmode = PD69104_REG_OPMD_AUTO;
