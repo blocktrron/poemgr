@@ -73,6 +73,34 @@ int pd69104_port_operation_mode_get(struct poemgr_pse_chip *pse_chip, int port)
 	return opmd_port;
 }
 
+int pd69104_port_poe_class_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+	int statp = pd69104_rr(pse_chip, PD69104_REG_STATP(port));
+	int classification = (statp & PD69104_REG_STATP_CLASSIFICATION_MASK) >> PD69104_REG_STATP_CLASSIFICATION_SHIFT;
+
+	if (statp < 0)
+		return statp;
+
+	/**
+	 * 0 = Unknown
+	 * 1 = Class 1
+	 * 2 = Class 2
+	 * 3 = Class 3
+	 * 4 = Class 4
+	 * 5 = Reserved
+	 * 6 = Class 0
+	 * 7 = Over-current
+	 */
+
+	if (classification > 0 && classification < 5)
+		return classification;
+
+	if (classification == 6)
+		return 0;
+
+	return -1;
+}
+
 int pd69104_port_power_enabled_get(struct poemgr_pse_chip *pse_chip, int port)
 {
 	return !!(PD69104_REG_STATPWR_PWR_ENABLED_PORT_MASK(port) & pd69104_rr(pse_chip, PD69104_REG_STATPWR));
