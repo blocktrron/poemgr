@@ -18,6 +18,10 @@ int pd69104_port_power_consumption_get(struct poemgr_pse_chip *pse_chip, int por
 
 int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip);
 
+int pd69104_port_power_enabled_get(struct poemgr_pse_chip *pse_chip, int port);
+
+int pd69104_port_power_good_get(struct poemgr_pse_chip *pse_chip, int port);
+
 int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_port_power_limit_set(struct poemgr_pse_chip *pse_chip, int port, int val);

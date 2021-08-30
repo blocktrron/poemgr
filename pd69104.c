@@ -63,6 +63,26 @@ int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip)
 	return (pd69104_rr(pse_chip, PD69104_REG_PWRGD) & PD69104_REG_PWRGD_PIN_STATUS_MASK) >> PD69104_REG_PWRGD_PIN_STATUS_SHIFT;
 }
 
+int pd69104_port_operation_mode_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+	int opmd_reg = pd69104_rr(pse_chip, PD69104_REG_OPMD);
+	int opmd_port = (PD69104_REG_OPMD_PORT_MASK(port) & opmd_reg) >> PD69104_REG_OPMD_PORT_SHIFT(port);
+	if (opmd_reg < 0)
+		return opmd_reg;
+
+	return opmd_port;
+}
+
+int pd69104_port_power_enabled_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+	return !!(PD69104_REG_STATPWR_PWR_ENABLED_PORT_MASK(port) & pd69104_rr(pse_chip, PD69104_REG_STATPWR));
+}
+
+int pd69104_port_power_good_get(struct poemgr_pse_chip *pse_chip, int port)
+{
+	return !!(PD69104_REG_STATPWR_PWR_GOOD_PORT_MASK(port) & pd69104_rr(pse_chip, PD69104_REG_STATPWR));
+}
+
 int pd69104_port_power_limit_get(struct poemgr_pse_chip *pse_chip, int port)
 {
 	return PD69104_REG_PWR_CR_PAL_MASK & pd69104_rr(pse_chip, PD69104_REG_PWR_CR(port));
