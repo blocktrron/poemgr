@@ -73,6 +73,19 @@ int pd69104_port_operation_mode_get(struct poemgr_pse_chip *pse_chip, int port)
 	return opmd_port;
 }
 
+int pd69104_port_operation_mode_set(struct poemgr_pse_chip *pse_chip, int port, int opmode)
+{
+	int opmd_reg = pd69104_rr(pse_chip, PD69104_REG_OPMD);
+
+	if (opmd_reg < 0)
+		return opmd_reg;
+
+	opmd_reg &= ~PD69104_REG_OPMD_PORT_MASK(port);
+	opmd_reg |= opmode << PD69104_REG_OPMD_PORT_SHIFT(port);
+
+	return pd69104_wr(pse_chip, PD69104_REG_OPMD, opmd_reg);
+}
+
 int pd69104_port_poe_class_get(struct poemgr_pse_chip *pse_chip, int port)
 {
 	int statp = pd69104_rr(pse_chip, PD69104_REG_STATP(port));

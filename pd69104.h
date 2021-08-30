@@ -20,6 +20,8 @@ int pd69104_pwrgd_pin_status_get(struct poemgr_pse_chip *pse_chip);
 
 int pd69104_port_operation_mode_get(struct poemgr_pse_chip *pse_chip, int port);
 
+int pd69104_port_operation_mode_set(struct poemgr_pse_chip *pse_chip, int port, int opmode);
+
 int pd69104_port_poe_class_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_port_power_enabled_get(struct poemgr_pse_chip *pse_chip, int port);
