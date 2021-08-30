@@ -141,6 +141,13 @@ static int poemgr_uswflex_apply_config(struct poemgr_ctx *ctx)
 		if (ret < 0)
 			goto out;
 
+		/* Shutdown implicitly disables detection as well as classification */
+		if (port_opmode != PD69104_REG_OPMD_SHUTDOWN) {
+			ret = pd69104_port_detection_classification_set(psechip, i, 1);
+			if (ret < 0)
+				goto out;
+		}
+
 		/* Set output limit per port */
 		ret = pd69104_port_power_limit_set(psechip, i, poe_budget);
 		if (ret < 0)
