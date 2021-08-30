@@ -61,14 +61,19 @@ static int poemgr_uswflex_get_power_budget(enum poemgr_poe_type poe_type)
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
-
-	/* Toggle FlipFlop */
-	/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
-	system("/usr/lib/poemgr/uswlite-pse-enable &> /dev/null");
+	int pse_reachable;
 
 	/* Init PD69104 */
 	if (pd69104_init(psechip, 0, 0x20, USWFLEX_PSE_PORTMASK))
 		return 1;
+
+	/* Check if PSE is up. Only reset the PSE chip in case the device is not reachable. */
+	pse_reachable = pd69104_device_online(psechip);
+	if (!pse_reachable) {
+		/* Toggle FlipFlop */
+		/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
+		system("/usr/lib/poemgr/uswlite-pse-enable &> /dev/null");
+	}
 
 	return 0;
 }
