@@ -19,7 +19,7 @@ static int uci_lookup_option_int(struct uci_context* uci, struct uci_section* s,
 	return str == NULL ? -1 : atoi(str);
 }
 
-static int load_port_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
+static int poemgr_load_port_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 {
 	struct uci_package *package;
 	struct uci_element *e;
@@ -69,9 +69,8 @@ out:
 	return ret;
 }
 
-int load_settings(struct poemgr_ctx *ctx)
+int poemgr_load_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 {
-	struct uci_context *uci_ctx = uci_alloc_context();
 	struct uci_package *package;
 	struct uci_section *section;
 	const char *s;
@@ -109,11 +108,7 @@ int load_settings(struct poemgr_ctx *ctx)
 
 	ctx->settings.profile = strdup(s);
 
-	ret = load_port_settings(ctx, uci_ctx);
 out:
-	if (uci_ctx);
-		uci_free_context(uci_ctx);
-
 	return ret;
 }
 
@@ -250,8 +245,9 @@ int poemgr_apply(struct poemgr_ctx *ctx)
 
 int main(int argc, char *argv[])
 {
+	struct uci_context *uci_ctx = uci_alloc_context();
 	static struct poemgr_profile *profile;
-	struct poemgr_ctx ctx;
+	struct poemgr_ctx ctx = {};
 	char *action;
 	int ret;
 
@@ -259,7 +255,7 @@ int main(int argc, char *argv[])
 	action = POEMGR_ACTION_STRING_SHOW;
 
 	/* Load settings */
-	ret = load_settings(&ctx);
+	ret = poemgr_load_settings(&ctx, uci_ctx);
 	if (ret)
 		exit(1);
 
@@ -275,6 +271,13 @@ int main(int argc, char *argv[])
 		exit(1);
 
 	ctx.profile = profile;
+
+	/* Load port settings (requires selected profile) */
+	ret = poemgr_load_port_settings(&ctx, uci_ctx);
+	if (ret)
+		exit(1);
+
+	/* Call profile init routine */
 	if (profile->init(&ctx))
 		exit(1);
 
@@ -289,6 +292,9 @@ int main(int argc, char *argv[])
 		/* Apply */
 		poemgr_apply(&ctx);
 	}
+	
+	if (uci_ctx)
+		uci_free_context(uci_ctx);
 
 	return 0;
 }
