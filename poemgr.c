@@ -184,7 +184,6 @@ int poemgr_show(struct poemgr_ctx *ctx)
 	for (int i = 0; i < ctx->profile->num_ports; i++) {
 		snprintf(port_idx, 3, "%d", i);
 		port_obj = json_object_new_object();
-		json_object_object_add(port_obj, "configured", json_object_new_boolean(!!ctx->ports[i].settings.name));
 		json_object_object_add(port_obj, "enabled", json_object_new_boolean(!!ctx->ports[i].status.enabled));
 		json_object_object_add(port_obj, "active", json_object_new_boolean(!!ctx->ports[i].status.active));
 		json_object_object_add(port_obj, "poe_class", json_object_new_int(ctx->ports[i].status.poe_class));
