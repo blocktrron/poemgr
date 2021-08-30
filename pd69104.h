@@ -24,6 +24,8 @@ int pd69104_port_operation_mode_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_port_operation_mode_set(struct poemgr_pse_chip *pse_chip, int port, int opmode);
 
+int pd69104_port_detection_classification_set(struct poemgr_pse_chip *pse_chip, int port, int enable);
+
 int pd69104_port_poe_class_get(struct poemgr_pse_chip *pse_chip, int port);
 
 int pd69104_port_power_enabled_get(struct poemgr_pse_chip *pse_chip, int port);

@@ -99,6 +99,22 @@ int pd69104_port_operation_mode_set(struct poemgr_pse_chip *pse_chip, int port, 
 	return pd69104_wr(pse_chip, PD69104_REG_OPMD, opmd_reg);
 }
 
+int pd69104_port_detection_classification_set(struct poemgr_pse_chip *pse_chip, int port, int enable)
+{
+	int detena_reg = pd69104_rr(pse_chip, PD69104_REG_DETENA);
+
+	if (detena_reg < 0)
+		return detena_reg;
+
+	detena_reg &= ~PD69104_REG_DETENA_DETECTION_PORT_MASK(port);
+	detena_reg |= !!enable << PD69104_REG_DETENA_DETECTION_PORT_SHIFT(port);
+
+	detena_reg &= ~PD69104_REG_DETENA_CLASSIFICATION_PORT_MASK(port);
+	detena_reg |= !!enable << PD69104_REG_DETENA_CLASSIFICATION_PORT_SHIFT(port);
+
+	return pd69104_wr(pse_chip, PD69104_REG_DETENA, detena_reg);
+}
+
 int pd69104_port_poe_class_get(struct poemgr_pse_chip *pse_chip, int port)
 {
 	int statp = pd69104_rr(pse_chip, PD69104_REG_STATP(port));
