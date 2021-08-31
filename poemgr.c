@@ -74,7 +74,7 @@ int poemgr_load_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 	struct uci_package *package;
 	struct uci_section *section;
 	const char *s;
-	int enabled;
+	int disabled;
 	int ret;
 
 	ret = 0;
@@ -93,12 +93,7 @@ int poemgr_load_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 		goto out;
 	}
 
-	ctx->settings.enabled = uci_lookup_option_int(uci_ctx, section, "enabled");
-	if (ctx->settings.enabled == -1) {
-		ret = -1;
-		goto out;
-	}
-
+	ctx->settings.disabled = !!(uci_lookup_option_int(uci_ctx, section, "disabled") > 0);
 
 	s = uci_lookup_option_string(uci_ctx, section, "profile");
 	if (!s) {

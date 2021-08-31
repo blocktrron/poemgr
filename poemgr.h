@@ -127,7 +127,7 @@ struct poemgr_output_status {
 };
 
 struct poemgr_settings {
-	int enabled;
+	int disabled;
 	char *profile;
 };
 
