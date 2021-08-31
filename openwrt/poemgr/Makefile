@@ -21,10 +21,11 @@ define Package/poemgr
 endef
 
 define Package/poemgr/install
-	$(INSTALL_DIR) $(1)/sbin $(1)/usr/lib/poemgr $(1)/etc/config
+	$(INSTALL_DIR) $(1)/sbin $(1)/usr/lib/poemgr/config $(1)/etc/config $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/poemgr $(1)/sbin/poemgr
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/uswlite-pse-enable $(1)/usr/lib/poemgr/uswlite-pse-enable
-	$(CP) $(PKG_BUILD_DIR)/contrib/poemgr.config $(1)/etc/config/poemgr
+	$(CP) $(PKG_BUILD_DIR)/contrib/usw-lite.config $(1)/usr/lib/poemgr/config/usw-lite.config
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/uci-defaults.sh $(1)/etc/uci-defaults/99-poemgr
 endef
 
 
