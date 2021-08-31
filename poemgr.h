@@ -8,8 +8,10 @@
 
 #define POEMGR_MAX_METRICS		10
 
-#define POEMGR_ACTION_STRING_SHOW	"show"
-#define POEMGR_ACTION_STRING_APPLY	"apply"
+#define POEMGR_ACTION_STRING_ENABLE		"enable"
+#define POEMGR_ACTION_STRING_DISABLE	"disable"
+#define POEMGR_ACTION_STRING_SHOW		"show"
+#define POEMGR_ACTION_STRING_APPLY		"apply"
 
 enum poemgr_poe_type {
 	POEMGR_POE_TYPE_AF = 0x1,
@@ -80,6 +82,9 @@ struct poemgr_profile {
 	void *priv;
 
 	int (*init)(struct poemgr_ctx *);
+	int (*ready)(struct poemgr_ctx *);
+	int (*enable)(struct poemgr_ctx *);
+	int (*disable)(struct poemgr_ctx *);
 	int (*apply_config)(struct poemgr_ctx *);
 	int (*update_port_status)(struct poemgr_ctx *, int port);
 	int (*update_input_status)(struct poemgr_ctx *);

@@ -67,13 +67,36 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 	if (pd69104_init(psechip, 0, 0x20, USWFLEX_PSE_PORTMASK))
 		return 1;
 
+	return 0;
+}
+
+static int poemgr_uswflex_ready(struct poemgr_ctx *ctx) {
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
+
+	/* Check if PSE is up. */
+	return pd69104_device_online(psechip);
+}
+
+static int poemgr_uswflex_enable_chip(struct poemgr_ctx *ctx) {
+	int pse_reachable;
+
 	/* Check if PSE is up. Only reset the PSE chip in case the device is not reachable. */
-	pse_reachable = pd69104_device_online(psechip);
+	pse_reachable = poemgr_uswflex_ready(ctx);
 	if (!pse_reachable) {
 		/* Toggle FlipFlop */
 		/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
-		system("/usr/lib/poemgr/uswlite-pse-enable &> /dev/null");
+		system("/usr/lib/poemgr/uswlite-pse-enable 0 &> /dev/null");
 	}
+
+	return 0;
+}
+
+static int poemgr_uswflex_disable_chip(struct poemgr_ctx *ctx) {
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
+	int pse_reachable;
+
+	/* Always disable chip, regardless whether it is reachable or not */
+	system("/usr/lib/poemgr/uswlite-pse-enable 1 &> /dev/null");
 
 	return 0;
 }
@@ -163,6 +186,9 @@ out:
 struct poemgr_profile poemgr_profile_uswflex = {
 	.name = "usw-flex",
 	.num_ports = USWLFEX_NUM_PORTS,
+	.ready = &poemgr_uswflex_ready,
+	.enable = &poemgr_uswflex_enable_chip,
+	.disable = &poemgr_uswflex_disable_chip,
 	.init = &poemgr_uswflex_init_chip,
 	.apply_config = &poemgr_uswflex_apply_config,
 	.update_port_status = &poemgr_uswflex_update_port_status,

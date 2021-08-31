@@ -146,6 +146,11 @@ int poemgr_show(struct poemgr_ctx *ctx)
 	char port_idx[3];
 	int ret = 0;
 
+	if(!ctx->profile->ready(ctx)) {
+		fprintf(stderr, "Profile disabled. Enable profile first.\n");
+		return 1;
+	}
+
 	/* Update port status */
 	for (int p_idx = 0; p_idx < ctx->profile->num_ports; p_idx++) {
 		ret = ctx->profile->update_port_status(ctx, p_idx);
@@ -236,8 +241,27 @@ out:
 	return ret;
 }
 
+int poemgr_enable(struct poemgr_ctx *ctx)
+{
+	if (!ctx->profile->enable)
+		return 0;
+
+	return ctx->profile->enable(ctx);
+}
+
+int poemgr_disable(struct poemgr_ctx *ctx)
+{
+	if (!ctx->profile->disable)
+		return 0;
+
+	return ctx->profile->disable(ctx);
+}
+
 int poemgr_apply(struct poemgr_ctx *ctx)
 {
+	/* Implicitly enable profile. */
+	poemgr_enable(ctx);
+
 	if (!ctx->profile->apply_config)
 		return 0;
 	
@@ -288,14 +312,20 @@ int main(int argc, char *argv[])
 	
 	if (!strcmp(POEMGR_ACTION_STRING_SHOW, action)) {
 		/* Show */
-		poemgr_show(&ctx);
+		ret = poemgr_show(&ctx);
 	} else if (!strcmp(POEMGR_ACTION_STRING_APPLY, action)) {
 		/* Apply */
-		poemgr_apply(&ctx);
+		ret = poemgr_apply(&ctx);
+	} else if (!strcmp(POEMGR_ACTION_STRING_ENABLE, action)) {
+		/* Enable */
+		ret = poemgr_enable(&ctx);
+	} else if (!strcmp(POEMGR_ACTION_STRING_DISABLE, action)) {
+		/* Disable */
+		ret = poemgr_disable(&ctx);
 	}
 	
 	if (uci_ctx)
 		uci_free_context(uci_ctx);
 
-	return 0;
+	return ret;
 }
