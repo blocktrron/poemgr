@@ -4,7 +4,7 @@ START=80
 USE_PROCD=1
 
 NAME=poemgr
-PROG=/usr/bin/poemgr
+PROG=/sbin/poemgr
 
 . /lib/functions.sh
 
@@ -19,22 +19,18 @@ service_triggers() {
 
 stop_service()
 {
-	poemgr disable
+	$PROG disable
 }
 
 start_service()
 {
 	DISABLED="$(uci -q get poemgr.@poemgr[-1].disabled)"
-	DISABLED="${DISABLED:-1}"
-
-	procd_open_instance
-	procd_set_param command "$PROG"
+	DISABLED="${DISABLED:-0}"
 
 	if [ "$DISABLED" -gt 0 ]
 	then
-		procd_append_param disable
+		$PROG disable
 	else
-		procd_append_param apply
+		$PROG apply
 	fi
-	procd_close_instance
 }
