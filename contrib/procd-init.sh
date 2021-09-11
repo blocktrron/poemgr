@@ -24,7 +24,7 @@ stop_service()
 
 start_service()
 {
-	DISABLED="$(uci -q get poemgr.@poemgr[-1].disabled)"
+	DISABLED="$(uci -q get poemgr.settings.disabled)"
 	DISABLED="${DISABLED:-0}"
 
 	if [ "$DISABLED" -gt 0 ]
