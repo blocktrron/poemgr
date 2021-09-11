@@ -19,17 +19,17 @@ By default, all PoE functionality is disabled.
 
 Currently the following commands are implemented.
 
-## poemgr enable
+### poemgr enable
 
 Enables the profile. This command will enable the PoE functionality of the selected profile. This does not necessarily mean
 PoE outputs will be enabled. It turns on PSE chips and other related hardware so `poemgr` commands can be sent to such devices.
 
-## poemgr disable
+### poemgr disable
 
 Enables the profile. This command will enable the PoE functionality of the selected profile. This does not necessarily mean
 PoE outputs will be disabled. 
 
-## poemgr apply
+### poemgr apply
 
 Apply configuration specified using UCI. This can have impact on the PoE output power configuration.
 
