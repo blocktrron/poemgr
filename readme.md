@@ -26,7 +26,7 @@ PoE outputs will be enabled. It turns on PSE chips and other related hardware so
 
 ### poemgr disable
 
-Enables the profile. This command will enable the PoE functionality of the selected profile. This does not necessarily mean
+Disables the profile. This command will disable the PoE functionality of the selected profile. This does not necessarily mean
 PoE outputs will be disabled. 
 
 ### poemgr apply
