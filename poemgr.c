@@ -259,6 +259,14 @@ int poemgr_apply(struct poemgr_ctx *ctx)
 	/* Implicitly enable profile. */
 	poemgr_enable(ctx);
 
+	/*
+		The PoE chip might need a tiny moment before input detection.
+		On a USW-Flex powered by an 802.3at injector (TL-POE160S), it initially
+		reports a 802.3af input, which results in a low-balled power budget.
+		After the following small nap, input is correctly read as 802.3at.
+	*/
+	usleep(1);
+
 	if (!ctx->profile->apply_config)
 		return 0;
 	
