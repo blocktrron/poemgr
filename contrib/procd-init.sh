@@ -6,9 +6,6 @@ USE_PROCD=1
 NAME=poemgr
 PROG=/sbin/poemgr
 
-. /lib/functions.sh
-
-
 reload_service() {
 	start
 }
