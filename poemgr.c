@@ -96,6 +96,7 @@ int poemgr_load_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 	}
 
 	ctx->settings.disabled = !!(uci_lookup_option_int(uci_ctx, section, "disabled") > 0);
+	ctx->settings.power_budget = uci_lookup_option_int(uci_ctx, section, "power_budget");
 
 	s = uci_lookup_option_string(uci_ctx, section, "profile");
 	if (!s) {
