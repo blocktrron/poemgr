@@ -130,6 +130,7 @@ struct poemgr_output_status {
 
 struct poemgr_settings {
 	int disabled;
+	int power_budget;
 	char *profile;
 };
 
