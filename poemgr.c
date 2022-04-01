@@ -266,7 +266,7 @@ int poemgr_apply(struct poemgr_ctx *ctx)
 	 * reports a 802.3af input, which results in a low-balled power budget.
 	 * After the following small nap, input is correctly read as 802.3at.
 	 */
-	usleep(1);
+	usleep(10000);
 
 	if (!ctx->profile->apply_config)
 		return 0;
