@@ -96,6 +96,7 @@ int poemgr_load_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 	}
 
 	ctx->settings.disabled = !!(uci_lookup_option_int(uci_ctx, section, "disabled") > 0);
+	ctx->settings.power_budget = uci_lookup_option_int(uci_ctx, section, "power_budget");
 
 	s = uci_lookup_option_string(uci_ctx, section, "profile");
 	if (!s) {
@@ -265,7 +266,7 @@ int poemgr_apply(struct poemgr_ctx *ctx)
 	 * reports a 802.3af input, which results in a low-balled power budget.
 	 * After the following small nap, input is correctly read as 802.3at.
 	 */
-	usleep(1);
+	usleep(10000);
 
 	if (!ctx->profile->apply_config)
 		return 0;

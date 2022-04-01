@@ -120,9 +120,13 @@ static int poemgr_uswflex_update_port_status(struct poemgr_ctx *ctx, int port)
 
 static int poemgr_uswflex_update_output_status(struct poemgr_ctx *ctx)
 {
-	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
-	int poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
-	
+	int poe_budget;
+	if (ctx->settings.power_budget > 0) {
+		poe_budget = ctx->settings.power_budget;
+	} else {
+		poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
+	}
+
 	ctx->output_status.power_budget = poe_budget;
 
 	return 0;
@@ -138,11 +142,17 @@ static int poemgr_uswflex_update_input_status(struct poemgr_ctx *ctx)
 static int poemgr_uswflex_apply_config(struct poemgr_ctx *ctx)
 {
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
-	int poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
 	struct poemgr_port_settings *port_settings;
 	int port_settings_available;
 	int port_opmode;
 	int ret = 0;
+
+	int poe_budget;
+	if (ctx->settings.power_budget > 0) {
+		poe_budget = ctx->settings.power_budget;
+	} else {
+		poe_budget = poemgr_uswflex_get_power_budget(poemgr_uswflex_read_power_input(ctx));
+	}
 
 	/* Set global power limit (Input - CPU)
 	 * Write this to all banks (a bank maps to the state of PGD[2:0]).
