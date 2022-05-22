@@ -1,7 +1,7 @@
 CC:=gcc
 OUT:=poemgr
-CFLAGS:=$(shell pkg-config --cflags json-c)
-LDFLAGS:=$(shell pkg-config --libs json-c) -luci
+CFLAGS+=$(shell pkg-config --cflags json-c)
+LDFLAGS+=$(shell pkg-config --libs json-c) -luci
 
 all: poemgr
 
