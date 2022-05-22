@@ -14,8 +14,6 @@
 
 #define USWLFEX_OWN_POWER_BUDGET	5	/* Own power budget */
 
-static struct pd69104_priv psechip;
-
 static enum poemgr_poe_type poemgr_uswflex_read_power_input(struct poemgr_ctx *ctx)
 {
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
@@ -63,7 +61,6 @@ static int poemgr_uswflex_get_power_budget(enum poemgr_poe_type poe_type)
 
 static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
-	int pse_reachable;
 
 	/* Init PD69104 */
 	if (pd69104_init(psechip, 0, 0x20, USWFLEX_PSE_PORTMASK))
@@ -93,10 +90,8 @@ static int poemgr_uswflex_enable_chip(struct poemgr_ctx *ctx) {
 	return 0;
 }
 
-static int poemgr_uswflex_disable_chip(struct poemgr_ctx *ctx) {
-	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
-	int pse_reachable;
-
+static int poemgr_uswflex_disable_chip(struct poemgr_ctx *ctx)
+{
 	/* Always disable chip, regardless whether it is reachable or not */
 	system("/usr/lib/poemgr/uswlite-pse-enable 1 &> /dev/null");
 
