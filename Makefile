@@ -1,5 +1,6 @@
 CC:=gcc
 OUT:=poemgr
+CFLAGS+= -Wall -Werror
 CFLAGS+=$(shell pkg-config --cflags json-c)
 LDFLAGS+=$(shell pkg-config --libs json-c) -luci
 
