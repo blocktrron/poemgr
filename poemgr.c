@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <uci.h>
+#include <unistd.h>
 #include <json-c/json.h>
 
 #include "poemgr.h"
@@ -23,9 +24,11 @@ static int uci_lookup_option_int(struct uci_context* uci, struct uci_section* s,
 
 static int poemgr_load_port_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 {
+	const char *disabled, *port, *name;
 	struct uci_package *package;
 	struct uci_element *e;
 	struct uci_section *s;
+	int port_idx;
 	int ret = 0;
 
 	package = uci_lookup_package(uci_ctx, "poemgr");
@@ -36,11 +39,7 @@ static int poemgr_load_port_settings(struct poemgr_ctx *ctx, struct uci_context 
 	}
 
 	uci_foreach_element(&package->sections, e) {
-		struct uci_section *s = uci_to_section(e);
-		const char *disabled;
-		const char *port;
-		const char *name;
-		int port_idx;
+		s = uci_to_section(e);
 
 		if (strcmp(s->type, "port"))
 			continue;
@@ -76,7 +75,6 @@ int poemgr_load_settings(struct poemgr_ctx *ctx, struct uci_context *uci_ctx)
 	struct uci_package *package;
 	struct uci_section *section;
 	const char *s;
-	int disabled;
 	int ret;
 
 	ret = 0;
@@ -153,18 +151,18 @@ int poemgr_show(struct poemgr_ctx *ctx)
 	for (int p_idx = 0; p_idx < ctx->profile->num_ports; p_idx++) {
 		ret = ctx->profile->update_port_status(ctx, p_idx);
 		if (ret)
-			goto out;
+			return ret;
 	}
 
 	/* Update input status */
 	ret = ctx->profile->update_input_status(ctx);
 	if (ret)
-		goto out;
+		return ret;
 
 	/* Update output status */
 	ret = ctx->profile->update_output_status(ctx);
 	if (ret)
-		goto out;
+		return ret;
 
 	/* Create JSON object */
 	root_obj = json_object_new_object();
