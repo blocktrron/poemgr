@@ -21,7 +21,8 @@ static struct pd69104_priv *pd69104_priv(struct poemgr_pse_chip *pse_chip) {
 	return (struct pd69104_priv *) pse_chip->priv;
 }
 
-static int32_t i2c_smbus_access(int file, char read_write, uint8_t command, int size, char *data)
+static int32_t i2c_smbus_access(int file, char read_write, uint8_t command,
+				int size, union i2c_smbus_data *data)
 {
 	struct i2c_smbus_ioctl_data args;
 
@@ -40,8 +41,7 @@ static int pd69104_wr(struct poemgr_pse_chip *pse_chip, uint8_t reg, uint8_t val
 
 	data.byte = val;
 
-	return i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_WRITE, reg,
-							2, (char *) &data);
+	return i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_WRITE, reg, 2, &data);
 }
 
 static int pd69104_rr(struct poemgr_pse_chip *pse_chip, uint8_t reg)
@@ -49,7 +49,7 @@ static int pd69104_rr(struct poemgr_pse_chip *pse_chip, uint8_t reg)
 	struct pd69104_priv *priv = pd69104_priv(pse_chip);
 	union i2c_smbus_data data;
 
-	if (i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_READ, reg, 2, (char *) &data))
+	if (i2c_smbus_access(priv->i2c_fd, I2C_SMBUS_READ, reg, 2, &data))
 		return -1;
 	
 	return 0x0FF & data.byte;
