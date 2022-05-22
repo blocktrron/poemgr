@@ -37,62 +37,6 @@ enum poemgr_metric_type {
 	POEMGR_METRIC_INT32,
 };
 
-static inline const char *poemgr_poe_type_to_string(enum poemgr_poe_type poe_type)
-{
-	if (poe_type == POEMGR_POE_TYPE_AF)
-		return "802.3af";
-	if (poe_type == POEMGR_POE_TYPE_AT)
-		return "802.3at";
-	if (poe_type == POEMGR_POE_TYPE_BT)
-		return "802.3bt";
-
-	return "unknown";
-}
-
-struct poemgr_ctx;
-
-struct poemgr_pse_chip;
-
-struct poemgr_metric {
-	enum poemgr_metric_type type;
-	char *name;
-	union {
-		char *val_char;
-		int32_t val_int32;
-	};
-};
-
-struct poemgr_pse_chip {
-	const char *model;
-
-	uint32_t portmask;
-
-	void *priv;
-
-	/* Metrics */
-	int num_metrics;
-	int (*export_metric)(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric);
-};
-
-struct poemgr_profile {
-	char *name;
-	int num_ports;
-
-	struct poemgr_pse_chip pse_chips[POEMGR_MAX_PSE_CHIPS];
-	int num_pse_chips;
-
-	void *priv;
-
-	int (*init)(struct poemgr_ctx *);
-	int (*ready)(struct poemgr_ctx *);
-	int (*enable)(struct poemgr_ctx *);
-	int (*disable)(struct poemgr_ctx *);
-	int (*apply_config)(struct poemgr_ctx *);
-	int (*update_port_status)(struct poemgr_ctx *, int port);
-	int (*update_input_status)(struct poemgr_ctx *);
-	int (*update_output_status)(struct poemgr_ctx *);
-};
-
 struct poemgr_port_settings {
 	char *name;
 	int disabled;
@@ -142,6 +86,58 @@ struct poemgr_ctx {
 	struct poemgr_input_status input_status;
 	struct poemgr_output_status output_status;
 };
+
+struct poemgr_metric {
+	enum poemgr_metric_type type;
+	char *name;
+	union {
+		char *val_char;
+		int32_t val_int32;
+	};
+};
+
+struct poemgr_pse_chip {
+	const char *model;
+
+	uint32_t portmask;
+
+	void *priv;
+
+	/* Metrics */
+	int num_metrics;
+	int (*export_metric)(struct poemgr_pse_chip *pse_chip, struct poemgr_metric *output, int metric);
+};
+
+struct poemgr_profile {
+	char *name;
+	int num_ports;
+
+	struct poemgr_pse_chip pse_chips[POEMGR_MAX_PSE_CHIPS];
+	int num_pse_chips;
+
+	void *priv;
+
+	int (*init)(struct poemgr_ctx *);
+	int (*ready)(struct poemgr_ctx *);
+	int (*enable)(struct poemgr_ctx *);
+	int (*disable)(struct poemgr_ctx *);
+	int (*apply_config)(struct poemgr_ctx *);
+	int (*update_port_status)(struct poemgr_ctx *, int port);
+	int (*update_input_status)(struct poemgr_ctx *);
+	int (*update_output_status)(struct poemgr_ctx *);
+};
+
+static inline const char *poemgr_poe_type_to_string(enum poemgr_poe_type poe_type)
+{
+	if (poe_type == POEMGR_POE_TYPE_AF)
+		return "802.3af";
+	if (poe_type == POEMGR_POE_TYPE_AT)
+		return "802.3at";
+	if (poe_type == POEMGR_POE_TYPE_BT)
+		return "802.3bt";
+
+	return "unknown";
+}
 
 static inline struct poemgr_pse_chip *poemgr_profile_pse_chip_get(struct poemgr_profile *profile, int pse_idx)
 {
