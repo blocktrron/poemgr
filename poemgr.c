@@ -276,9 +276,10 @@ int poemgr_apply(struct poemgr_ctx *ctx)
 int main(int argc, char *argv[])
 {
 	struct uci_context *uci_ctx = uci_alloc_context();
-	static struct poemgr_profile *profile;
+	static struct poemgr_profile *profile = NULL;
 	struct poemgr_ctx ctx = {};
 	char *action;
+	size_t i;
 	int ret;
 
 	/* Default action */
@@ -290,11 +291,11 @@ int main(int argc, char *argv[])
 		exit(1);
 
 	/* Select profile */
-	profile = poemgr_profiles[0];
-	while (1) {
-		if (!strcmp(profile->name, ctx.settings.profile) || profile == NULL) {
+	for (i = 0; poemgr_profiles[i]; i++) {
+		profile = poemgr_profiles[i];
+
+		if (!strcmp(profile->name, ctx.settings.profile))
 			break;
-		}
 	}
 
 	if (profile == NULL)
