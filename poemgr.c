@@ -211,8 +211,10 @@ int poemgr_show(struct poemgr_ctx *ctx)
 
 		for (int j = 0; j < pse_chip->num_metrics; j++) {
 			ret = pse_chip->export_metric(pse_chip, &metric_buf, j);
-			if (ret)
+			if (ret) {
+				fprintf(stderr, "Error exporting metrics from chip\n");
 				goto out;
+			}
 
 			/* ToDo handle memory in case of error */
 			switch (metric_buf.type) {
@@ -327,6 +329,9 @@ int main(int argc, char *argv[])
 	} else if (!strcmp(POEMGR_ACTION_STRING_DISABLE, action)) {
 		/* Disable */
 		ret = poemgr_disable(&ctx);
+	} else {
+		fprintf(stderr, "Unknown command.\n");
+		ret = 1;
 	}
 	
 	if (uci_ctx)
