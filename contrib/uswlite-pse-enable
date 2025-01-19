@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo 487 > /sys/class/gpio/export # JK
-echo 488 > /sys/class/gpio/export # CLK
+echo 519 > /sys/class/gpio/export # JK
+echo 520 > /sys/class/gpio/export # CLK
 
 echo out > /sys/class/gpio/gpio487/direction
 echo out > /sys/class/gpio/gpio488/direction
