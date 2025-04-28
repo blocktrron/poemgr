@@ -3,9 +3,9 @@
 echo 519 > /sys/class/gpio/export # JK
 echo 520 > /sys/class/gpio/export # CLK
 
-echo out > /sys/class/gpio/gpio487/direction
-echo out > /sys/class/gpio/gpio488/direction
+echo out > /sys/class/gpio/gpio519/direction
+echo out > /sys/class/gpio/gpio520/direction
 
-echo $1 > /sys/class/gpio/gpio487/value
-echo 0 > /sys/class/gpio/gpio488/value
-echo 1 > /sys/class/gpio/gpio488/value
+echo $1 > /sys/class/gpio/gpio519/value
+echo 0 > /sys/class/gpio/gpio520/value
+echo 1 > /sys/class/gpio/gpio520/value
