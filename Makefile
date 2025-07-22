@@ -6,9 +6,9 @@ CFLAGS+= -Wall -Werror
 CFLAGS+=$(shell pkg-config --cflags json-c)
 LDFLAGS+=$(shell pkg-config --libs json-c) -luci
 
-all: poemgr
+all: $(OUT)
 
-poemgr:
+$(OUT):
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(OUT) pd69104.c poemgr.c uswflex.c
 
 clean:
