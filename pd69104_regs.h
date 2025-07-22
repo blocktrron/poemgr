@@ -1,15 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #pragma once
-
+#include "common.h"
 /**
  * See Microsemi_PoE_PD69104B1_Generic_UG_Reg_Map.pdf
  *
  * http://ww1.microchip.com/downloads/en/DeviceDoc/Microsemi_PoE_PD69104B1_Generic_UG_Reg_Map.pdf
  */
 
-#define GENMASK(h, l) \
-	(((~0UL) << (l)) & (~0UL >> (32 - 1 - (h))))
 
 
 #define PD69104_REG_STATP(x)							(0xC + x)
