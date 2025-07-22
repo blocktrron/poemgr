@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 CC:=gcc
 OUT:=poemgr
 CFLAGS+= -Wall -Werror
