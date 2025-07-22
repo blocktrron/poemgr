@@ -182,6 +182,7 @@ int poemgr_show(struct poemgr_ctx *ctx)
 	output_obj = json_object_new_object();
 
 	json_object_object_add(output_obj, "power_budget", json_object_new_int(ctx->output_status.power_budget));
+	json_object_object_add(output_obj, "type", json_object_new_string(poemgr_poe_type_to_string(ctx->output_status.type)));
 
 	/* Get port information */
 	ports_obj = json_object_new_object();

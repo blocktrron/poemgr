@@ -72,6 +72,7 @@ struct poemgr_input_status {
 
 struct poemgr_output_status {
 	int power_budget;
+	enum poemgr_poe_type type;
 
 	time_t last_update;
 };
