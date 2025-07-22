@@ -13,3 +13,5 @@ $(OUT):
 
 clean:
 	rm $(OUT)
+
+.PHONY: all clean
