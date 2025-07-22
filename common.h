@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <linux/i2c.h>
 #include <stdint.h>
 #include <stdio.h>
 

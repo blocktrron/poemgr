@@ -9,9 +9,11 @@
 
 #include "poemgr.h"
 
+extern struct poemgr_profile poemgr_profile_psx10;
 extern struct poemgr_profile poemgr_profile_uswflex;
 
 static struct poemgr_profile *poemgr_profiles[] = {
+	&poemgr_profile_psx10,
 	&poemgr_profile_uswflex,
 	NULL
 };
@@ -131,6 +133,8 @@ static json_object *poemgr_create_port_fault_array(int faults)
 		json_object_array_add(arr, json_object_new_string("over-current"));
 	if (faults & POEMGR_FAULT_TYPE_UNKNOWN)
 		json_object_array_add(arr, json_object_new_string("unknown"));
+	if (faults & POEMGR_FAULT_TYPE_CLASSIFICATION_ERROR)
+		json_object_array_add(arr, json_object_new_string("classification-error"));
 
 	return arr;
 }
