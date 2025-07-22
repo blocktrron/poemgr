@@ -1,17 +1,31 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-CC:=gcc
+
 OUT:=poemgr
-CFLAGS+= -Wall -Werror
+OBJ += pd69104.o
+OBJ += poemgr.o
+OBJ += uswflex.o
+
+CC:=gcc
+CFLAGS+= -Wall -Werror -MD -MP
 CFLAGS+=$(shell pkg-config --cflags json-c)
 LDLIBS+=$(shell pkg-config --libs json-c) -luci
 
+
 all: $(OUT)
 
-$(OUT):
-	$(CC) $(CFLAGS) $(LDFLAGS) $(TARGET_ARCH) pd69104.c poemgr.c uswflex.c $(LDLIBS) -o $@
+.SUFFIXES: .o .c
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(OUT): $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
 
 clean:
-	rm $(OUT)
+	rm -f $(OUT) $(OBJ) $(DEP)
+
+# load dependencies
+DEP = $(OBJ:.o=.d)
+-include $(DEP)
 
 .PHONY: all clean
