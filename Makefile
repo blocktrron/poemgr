@@ -4,12 +4,12 @@ CC:=gcc
 OUT:=poemgr
 CFLAGS+= -Wall -Werror
 CFLAGS+=$(shell pkg-config --cflags json-c)
-LDFLAGS+=$(shell pkg-config --libs json-c) -luci
+LDLIBS+=$(shell pkg-config --libs json-c) -luci
 
 all: $(OUT)
 
 $(OUT):
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(OUT) pd69104.c poemgr.c uswflex.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(TARGET_ARCH) pd69104.c poemgr.c uswflex.c $(LDLIBS) -o $@
 
 clean:
 	rm $(OUT)
