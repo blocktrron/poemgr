@@ -10,6 +10,9 @@ plasmacloud,psx8|\
 plasmacloud,psx10)
     cp /usr/lib/poemgr/config/psx10.config /etc/config/poemgr
     ;;
+plasmacloud,psx28)
+    cp /usr/lib/poemgr/config/psx28.config /etc/config/poemgr
+    ;;
 ubnt,usw-flex)
     cp /usr/lib/poemgr/config/usw-lite.config /etc/config/poemgr
     ;;

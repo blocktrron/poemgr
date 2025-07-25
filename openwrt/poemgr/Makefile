@@ -25,6 +25,7 @@ define Package/poemgr/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/poemgr $(1)/sbin/poemgr
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/uswlite-pse-enable $(1)/usr/lib/poemgr/uswlite-pse-enable
 	$(CP) $(PKG_BUILD_DIR)/contrib/psx10.config $(1)/usr/lib/poemgr/config/psx10.config
+	$(CP) $(PKG_BUILD_DIR)/contrib/psx28.config $(1)/usr/lib/poemgr/config/psx28.config
 	$(CP) $(PKG_BUILD_DIR)/contrib/usw-lite.config $(1)/usr/lib/poemgr/config/usw-lite.config
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/uci-defaults.sh $(1)/etc/uci-defaults/99-poemgr
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/procd-init.sh $(1)/etc/init.d/poemgr

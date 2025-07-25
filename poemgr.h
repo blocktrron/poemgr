@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdint.h>
 
-#define POEMGR_MAX_PORTS	8
+#define POEMGR_MAX_PORTS	28
 #define POEMGR_MAX_PSE_CHIPS	2
 
 #define POEMGR_MAX_METRICS		10
