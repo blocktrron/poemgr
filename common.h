@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <linux/i2c.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -18,6 +19,9 @@
 
 #define debug(fmt, ...) fprintf(stderr, "%s +%d [%s]: " fmt, __FILE__, __LINE__, __func__ __VA_OPT__(,) __VA_ARGS__);
 
+#define hexdump(var, len) do { debug(#var ": "); _hexdump(var, len); } while(0)
+
+void _hexdump(uint8_t *buffer, int len);
 
 
 /**
@@ -36,3 +40,5 @@ int i2c_write(int i2c_fd, uint8_t addr, uint8_t reg, uint8_t data);
 int i2c_read_nbytes(int i2c_fd, uint8_t i2c_addr, uint8_t reg, size_t n,
 		    void *val);
 int i2c_read(int i2c_fd, uint8_t i2c_addr, uint8_t reg, uint8_t *val);
+int32_t i2c_smbus_access(int file, char read_write, uint8_t command,
+			 int size, union i2c_smbus_data *data);

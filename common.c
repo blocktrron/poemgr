@@ -68,6 +68,27 @@ int i2c_read(int i2c_fd, uint8_t i2c_addr, uint8_t reg, uint8_t *val)
 	return i2c_read_nbytes(i2c_fd, i2c_addr, reg, 1, val);
 }
 
+int32_t i2c_smbus_access(int file, char read_write, uint8_t command,
+			 int size, union i2c_smbus_data *data)
+{
+	struct i2c_smbus_ioctl_data args;
+
+	args.read_write = read_write;
+	args.command = command;
+	args.size = size;
+	args.data = data;
+	return ioctl(file, I2C_SMBUS, &args);
+}
+
+void _hexdump(uint8_t *buffer, int len) {
+	for (int i = 0; i < len; i++) {
+		fprintf(stderr, "%02x ", *buffer);
+		buffer++;
+	}
+
+	fprintf(stderr, "\n");
+}
+
 int32_t parse_nbit_value_munit(
 	int val1,
 	int val2,

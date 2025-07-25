@@ -7,6 +7,7 @@ OBJ += ip8008.o
 OBJ += pd69104.o
 OBJ += poemgr.o
 OBJ += psx10.o
+OBJ += rtl8239.o
 OBJ += uswflex.o
 
 CC:=gcc

@@ -9,7 +9,7 @@
 #include <linux/i2c-dev.h>
 
 #include <sys/ioctl.h>
-
+#include "common.h"
 #include "pd69104.h"
 #include "pd69104_regs.h"
 
@@ -19,19 +19,6 @@
 static struct pd69104_priv *pd69104_priv(struct poemgr_pse_chip *pse_chip) {
 	return (struct pd69104_priv *) pse_chip->priv;
 }
-
-static int32_t i2c_smbus_access(int file, char read_write, uint8_t command,
-				int size, union i2c_smbus_data *data)
-{
-	struct i2c_smbus_ioctl_data args;
-
-	args.read_write = read_write;
-	args.command = command;
-	args.size = size;
-	args.data = data;
-	return ioctl(file,I2C_SMBUS,&args);
-}
-
 
 static int pd69104_wr(struct poemgr_pse_chip *pse_chip, uint8_t reg, uint8_t val)
 {
