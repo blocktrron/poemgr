@@ -5,6 +5,7 @@ OUT:=poemgr
 OBJ += common.o
 OBJ += ip802ar.o
 OBJ += ip8008.o
+OBJ += mcx3.o
 OBJ += pd69104.o
 OBJ += poemgr.o
 OBJ += psx10.o
