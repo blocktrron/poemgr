@@ -1,8 +1,13 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=poemgr
 PKG_VERSION:=$(shell git show -s --format=%cd --date=short)
 PKG_RELEASE:=1
+
+PKG_MAINTAINER:=David Bauer <mail@david-bauer.net>
+PKG_LICENSE:=GPL-2.0-only
 
 PKG_FILE_DEPENDS:=$(CURDIR)/../..
 
@@ -17,7 +22,11 @@ define Package/poemgr
   SECTION:=utils
   CATEGORY:=Utilities
   DEPENDS:=+libuci +libjson-c
-  TITLE:=Control PoE ports on the UniFi Flex switch
+  TITLE:=Utility to control PoE ports on the UniFi Flex switch
+endef
+
+define Package/poemgr/conffiles
+/etc/config/poemgr
 endef
 
 define Package/poemgr/install
