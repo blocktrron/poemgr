@@ -262,12 +262,12 @@ int pd69104_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr, ui
 
 	if (fd == -1) {
 		perror(i2cpath);
-		return 1;
+		goto err_free_priv;
 	}
 
 	if (ioctl(fd, I2C_SLAVE, priv->i2c_addr) < 0) {
 		perror("i2c_set_address");
-		return 1;
+		goto err_close_fd;
 	}
 
 	priv->i2c_fd = fd;
@@ -279,6 +279,13 @@ int pd69104_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr, ui
 	pse_chip->export_metric = &pd69104_export_metric;
 
 	return 0;
+
+err_close_fd:
+	close(fd);
+err_free_priv:
+	free(priv);
+
+	return 1;
 }
 
 int pd69104_end(struct poemgr_pse_chip *pse_chip)
