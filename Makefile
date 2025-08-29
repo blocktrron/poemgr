@@ -2,8 +2,11 @@
 
 
 OUT:=poemgr
+OBJ += common.o
+OBJ += ip8008.o
 OBJ += pd69104.o
 OBJ += poemgr.o
+OBJ += psx10.o
 OBJ += uswflex.o
 
 CC:=gcc

@@ -9,9 +9,11 @@
 
 #include "poemgr.h"
 
+extern struct poemgr_profile poemgr_profile_psx10;
 extern struct poemgr_profile poemgr_profile_uswflex;
 
 static struct poemgr_profile *poemgr_profiles[] = {
+	&poemgr_profile_psx10,
 	&poemgr_profile_uswflex,
 	NULL
 };
@@ -131,6 +133,8 @@ static json_object *poemgr_create_port_fault_array(int faults)
 		json_object_array_add(arr, json_object_new_string("over-current"));
 	if (faults & POEMGR_FAULT_TYPE_UNKNOWN)
 		json_object_array_add(arr, json_object_new_string("unknown"));
+	if (faults & POEMGR_FAULT_TYPE_CLASSIFICATION_ERROR)
+		json_object_array_add(arr, json_object_new_string("classification-error"));
 
 	return arr;
 }
@@ -140,6 +144,8 @@ int poemgr_show(struct poemgr_ctx *ctx)
 	struct json_object *root_obj, *ports_obj, *port_obj, *pse_arr, *pse_obj, *input_obj, *output_obj;
 	struct poemgr_pse_chip *pse_chip;
 	struct poemgr_metric metric_buf;
+	struct poemgr_metric port_metric_buf;
+	int metric = 0;
 	char port_idx[3];
 	int ret = 0;
 
@@ -180,6 +186,7 @@ int poemgr_show(struct poemgr_ctx *ctx)
 	output_obj = json_object_new_object();
 
 	json_object_object_add(output_obj, "power_budget", json_object_new_int(ctx->output_status.power_budget));
+	json_object_object_add(output_obj, "type", json_object_new_string(poemgr_poe_type_to_string(ctx->output_status.type)));
 
 	/* Get port information */
 	ports_obj = json_object_new_object();
@@ -193,7 +200,34 @@ int poemgr_show(struct poemgr_ctx *ctx)
 		json_object_object_add(port_obj, "power_limit", json_object_new_int(ctx->ports[i].status.power_limit));
 		json_object_object_add(port_obj, "name", !!ctx->ports[i].settings.name ? json_object_new_string(ctx->ports[i].settings.name) : NULL);
 		json_object_object_add(port_obj, "faults", poemgr_create_port_fault_array(ctx->ports[i].status.faults));
-		/* ToDo: Export PSE specific data */
+		if (ctx->profile->export_port_metric) {
+			metric = 0;
+			do {
+				ret = ctx->profile->export_port_metric(ctx, i, &port_metric_buf, metric);
+				if (ret)
+					goto out;
+
+				if (port_metric_buf.type == POEMGR_METRIC_END)
+					break;
+
+				switch (port_metric_buf.type) {
+					case POEMGR_METRIC_INT32:
+						json_object_object_add(port_obj, port_metric_buf.name, json_object_new_int(port_metric_buf.val_int32));
+						break;
+					case POEMGR_METRIC_UINT32:
+						json_object_object_add(port_obj, port_metric_buf.name, json_object_new_int64(port_metric_buf.val_uint32));
+						break;
+					case POEMGR_METRIC_STRING:
+						json_object_object_add(port_obj, port_metric_buf.name, json_object_new_string(port_metric_buf.val_char));
+						break;
+					default:
+						ret = 1;
+						goto out;
+				}
+				metric++;
+			}
+			while (port_metric_buf.type != POEMGR_METRIC_END);
+		}
 
 		json_object_object_add(ports_obj, port_idx, port_obj);
 	}
@@ -216,11 +250,21 @@ int poemgr_show(struct poemgr_ctx *ctx)
 				fprintf(stderr, "Error exporting metrics from chip\n");
 				goto out;
 			}
+			// Break early if metric end is reached before num_metrics
+			if (metric_buf.type == POEMGR_METRIC_END)
+				break;
 
 			/* ToDo handle memory in case of error */
 			switch (metric_buf.type) {
 				case POEMGR_METRIC_INT32:
 					json_object_object_add(pse_obj, metric_buf.name, json_object_new_int(metric_buf.val_int32));
+					break;
+				case POEMGR_METRIC_UINT32:
+					// cast to int64 to avoid integer overflow
+					json_object_object_add(pse_obj, metric_buf.name, json_object_new_int64(metric_buf.val_uint32));
+					break;
+				case POEMGR_METRIC_STRING:
+					json_object_object_add(pse_obj, metric_buf.name, json_object_new_string(metric_buf.val_char));
 					break;
 				default:
 					ret = 1;
@@ -228,7 +272,7 @@ int poemgr_show(struct poemgr_ctx *ctx)
 			}
 		}
 	}
-	
+
 
 	/* Save to char pointer */
 	const char *c = json_object_to_json_string_ext(root_obj, JSON_C_TO_STRING_PRETTY);
@@ -271,7 +315,7 @@ int poemgr_apply(struct poemgr_ctx *ctx)
 
 	if (!ctx->profile->apply_config)
 		return 0;
-	
+
 	return ctx->profile->apply_config(ctx);
 }
 
@@ -317,7 +361,7 @@ int main(int argc, char *argv[])
 	/* check which action we are supposed to perform */
 	if (argc > 1)
 		action = argv[1];
-	
+
 	if (!strcmp(POEMGR_ACTION_STRING_SHOW, action)) {
 		/* Show */
 		ret = poemgr_show(&ctx);
@@ -334,7 +378,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Unknown command.\n");
 		ret = 1;
 	}
-	
+
 	if (uci_ctx)
 		uci_free_context(uci_ctx);
 

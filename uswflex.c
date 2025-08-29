@@ -123,6 +123,7 @@ static int poemgr_uswflex_update_output_status(struct poemgr_ctx *ctx)
 	}
 
 	ctx->output_status.power_budget = poe_budget;
+	ctx->output_status.type = POEMGR_POE_TYPE_AT;
 
 	return 0;
 }

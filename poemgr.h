@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdint.h>
 
-#define POEMGR_MAX_PORTS	4
+#define POEMGR_MAX_PORTS	8
 #define POEMGR_MAX_PSE_CHIPS	2
 
 #define POEMGR_MAX_METRICS		10
@@ -31,10 +31,15 @@ enum poemgr_port_fault_type {
 	POEMGR_FAULT_TYPE_OPEN_CIRCUIT = 0x40,
 	POEMGR_FAULT_TYPE_OVER_CURRENT = 0x80,
 	POEMGR_FAULT_TYPE_UNKNOWN = 0x100,
+	POEMGR_FAULT_TYPE_CLASSIFICATION_ERROR = 0x200,
 };
 
 enum poemgr_metric_type {
 	POEMGR_METRIC_INT32,
+	POEMGR_METRIC_UINT32,
+	POEMGR_METRIC_STRING,
+
+	POEMGR_METRIC_END,
 };
 
 struct poemgr_port_settings {
@@ -68,6 +73,7 @@ struct poemgr_input_status {
 
 struct poemgr_output_status {
 	int power_budget;
+	enum poemgr_poe_type type;
 
 	time_t last_update;
 };
@@ -91,8 +97,9 @@ struct poemgr_metric {
 	enum poemgr_metric_type type;
 	char *name;
 	union {
-		char *val_char;
+		char val_char[256];
 		int32_t val_int32;
+		uint32_t val_uint32;
 	};
 };
 
@@ -125,6 +132,7 @@ struct poemgr_profile {
 	int (*update_port_status)(struct poemgr_ctx *, int port);
 	int (*update_input_status)(struct poemgr_ctx *);
 	int (*update_output_status)(struct poemgr_ctx *);
+	int (*export_port_metric)(struct poemgr_ctx *, int port, struct poemgr_metric *output, int metric);
 };
 
 static inline const char *poemgr_poe_type_to_string(enum poemgr_poe_type poe_type)
