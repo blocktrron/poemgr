@@ -22,7 +22,7 @@ define Package/poemgr
   SECTION:=utils
   CATEGORY:=Utilities
   DEPENDS:=+libuci +libjson-c
-  TITLE:=Utility to control PoE ports on the UniFi Flex switch
+  TITLE:=Utility to control PoE ports on UniFi Flex and Plasma Cloud switches
 endef
 
 define Package/poemgr/conffiles
@@ -33,6 +33,7 @@ define Package/poemgr/install
 	$(INSTALL_DIR) $(1)/sbin $(1)/usr/lib/poemgr/config $(1)/etc/config $(1)/etc/uci-defaults $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/poemgr $(1)/sbin/poemgr
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/contrib/uswlite-pse-enable $(1)/usr/lib/poemgr/uswlite-pse-enable
+	$(CP) $(PKG_BUILD_DIR)/contrib/mcx3.config $(1)/usr/lib/poemgr/config/mcx3.config
 	$(CP) $(PKG_BUILD_DIR)/contrib/psx10.config $(1)/usr/lib/poemgr/config/psx10.config
 	$(CP) $(PKG_BUILD_DIR)/contrib/psx28.config $(1)/usr/lib/poemgr/config/psx28.config
 	$(CP) $(PKG_BUILD_DIR)/contrib/usw-lite.config $(1)/usr/lib/poemgr/config/usw-lite.config
