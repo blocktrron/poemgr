@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "poemgr.h"
 #include "pd69104.h"
@@ -86,6 +87,15 @@ static int poemgr_uswflex_enable_chip(struct poemgr_ctx *ctx) {
 		/* ToDo Replace this with libgpiod at some point. Not part of OpenWrt core yet. */
 		system("/usr/lib/poemgr/uswlite-pse-enable 0 &> /dev/null");
 	}
+
+	/*
+	 * The PoE chip might need a tiny moment before input detection.  On
+	 * a USW-Flex powered by an 802.3at injector (TL-POE160S), it
+	 * initially reports a 802.3af input, which results in a low-balled
+	 * power budget.  After the following small nap, input is correctly
+	 * read as 802.3at.
+	 */
+	usleep(10000);
 
 	return 0;
 }
