@@ -1636,3 +1636,13 @@ out_free_priv:
 
 	return 1;
 }
+
+int rtl8239_end(struct poemgr_pse_chip *pse_chip)
+{
+	struct rtl8239_priv *priv = pse_chip->priv;
+
+	close(priv->i2c_fd);
+	free(priv);
+
+	return 0;
+}

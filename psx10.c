@@ -20,6 +20,12 @@ static int poemgr_psx10_init_chip(struct poemgr_ctx *ctx) {
 	return ip8008_init(psechip, 0, PSX10_PSE_I2C_ADDR, PSX10_PSE_PORTMASK);
 }
 
+static int poemgr_psx10_destroy_chip(struct poemgr_ctx *ctx) {
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, PSX10_NUM_PSE_CHIP_IDX);
+
+	return ip8008_end(psechip);
+}
+
 static int poemgr_psx10_ready(struct poemgr_ctx *ctx) {
 	int ret = -1;
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, PSX10_NUM_PSE_CHIP_IDX);
@@ -150,6 +156,7 @@ struct poemgr_profile poemgr_profile_psx10 = {
 	.enable = &poemgr_psx10_enable_chip,
 	.disable = &poemgr_psx10_disable_chip,
 	.init = &poemgr_psx10_init_chip,
+	.destroy = &poemgr_psx10_destroy_chip,
 	.apply_config = &poemgr_psx10_apply_config,
 	.update_port_status = &poemgr_psx10_update_port_status,
 	.export_port_metric = &poemgr_psx10_export_port_metric,

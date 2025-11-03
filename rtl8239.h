@@ -174,6 +174,7 @@ struct rtl8239_port_measurement {
 
 int rtl8239_init(struct poemgr_pse_chip *pse_chip, int i2c_bus, int i2c_addr,
 		 uint32_t port_mask);
+int rtl8239_end(struct poemgr_pse_chip *pse_chip);
 
 int rtl8239_device_online(struct poemgr_pse_chip *pse_chip);
 int rtl8239_device_reset(struct poemgr_pse_chip *pse_chip);

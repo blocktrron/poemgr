@@ -23,6 +23,14 @@ static int poemgr_psx28_init_chip(struct poemgr_ctx *ctx)
 	return rtl8239_init(psechip, 5, PSX28_PSE_I2C_ADDR, PSX28_PSE_PORTMASK);
 }
 
+static int poemgr_psx28_destroy_chip(struct poemgr_ctx *ctx)
+{
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(
+		ctx->profile, PSX28_NUM_PSE_CHIP_IDX);
+
+	return rtl8239_end(psechip);
+}
+
 static int poemgr_psx28_ready(struct poemgr_ctx *ctx)
 {
 	int ret = -1;
@@ -286,6 +294,7 @@ struct poemgr_profile poemgr_profile_psx28 = {
 	.enable = &poemgr_psx28_enable_chip,
 	.disable = &poemgr_psx28_disable_chip,
 	.init = &poemgr_psx28_init_chip,
+	.destroy = &poemgr_psx28_destroy_chip,
 	.apply_config = &poemgr_psx28_apply_config,
 	.update_port_status = &poemgr_psx28_update_port_status,
 	.export_port_metric = &poemgr_psx28_export_port_metric,

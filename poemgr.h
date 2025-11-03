@@ -125,6 +125,7 @@ struct poemgr_profile {
 	void *priv;
 
 	int (*init)(struct poemgr_ctx *);
+	int (*destroy)(struct poemgr_ctx *);
 	int (*ready)(struct poemgr_ctx *);
 	int (*enable)(struct poemgr_ctx *);
 	int (*disable)(struct poemgr_ctx *);

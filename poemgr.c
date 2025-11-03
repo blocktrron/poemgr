@@ -381,6 +381,8 @@ int main(int argc, char *argv[])
 		ret = 1;
 	}
 
+	profile->destroy(&ctx);
+
 	if (uci_ctx)
 		uci_free_context(uci_ctx);
 
