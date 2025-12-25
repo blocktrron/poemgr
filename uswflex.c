@@ -69,6 +69,17 @@ static int poemgr_uswflex_init_chip(struct poemgr_ctx *ctx) {
 	return 0;
 }
 
+static int poemgr_uswflex_deinit_chip(struct poemgr_ctx *ctx) {
+	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
+
+	/* End PD69104 */
+	if (pd69104_end(psechip))
+		return 1;
+
+	return 0;
+}
+
+
 static int poemgr_uswflex_ready(struct poemgr_ctx *ctx) {
 	struct poemgr_pse_chip *psechip = poemgr_profile_pse_chip_get(ctx->profile, USWLFEX_NUM_PSE_CHIP_IDX);
 
@@ -198,6 +209,7 @@ struct poemgr_profile poemgr_profile_uswflex = {
 	.enable = &poemgr_uswflex_enable_chip,
 	.disable = &poemgr_uswflex_disable_chip,
 	.init = &poemgr_uswflex_init_chip,
+	.destroy = &poemgr_uswflex_deinit_chip,
 	.apply_config = &poemgr_uswflex_apply_config,
 	.update_port_status = &poemgr_uswflex_update_port_status,
 	.update_output_status = &poemgr_uswflex_update_output_status,

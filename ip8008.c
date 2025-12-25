@@ -636,3 +636,13 @@ out_free_priv:
 
 	return 1;
 }
+
+int ip8008_end(struct poemgr_pse_chip *pse_chip)
+{
+	struct ip8008_priv *priv = pse_chip->priv;
+
+	close(priv->i2c_fd);
+	free(priv);
+
+	return 0;
+}
